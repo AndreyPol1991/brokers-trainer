@@ -230,6 +230,16 @@
   .rep .rcells{display:flex; gap:3px; flex-wrap:wrap; margin-top:8px}
   .rep .rcells .ocell{padding:3px 6px; font-size:10.5px}
 
+  /* AMQP: модель и разговор по шагам */
+  .amqp-pipe{display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:10px}
+  @media (max-width:860px){.amqp-pipe{grid-template-columns:repeat(2,1fr)}}
+  .amqp-node{position:relative; border:1.5px solid var(--line); border-radius:10px; padding:10px 11px; background:var(--surface-2); display:flex; flex-direction:column; gap:3px; transition:border-color .2s, background .2s, box-shadow .2s}
+  .amqp-node b{font-size:13.5px}
+  .amqp-node small{font-size:11.5px; color:var(--muted); line-height:1.35}
+  .amqp-node.on{border-color:var(--rmq); background:color-mix(in srgb,var(--rmq) 12%,var(--surface)); box-shadow:0 0 0 3px color-mix(in srgb,var(--rmq) 20%,transparent)}
+  .amqp-cmd{font:600 12px var(--mono); color:var(--rmq); display:block; margin:1px 0 3px}
+  .amqp-dir{font:600 10.5px var(--mono); text-transform:uppercase; letter-spacing:.03em; color:var(--faint)}
+
   /* реплики с нуля: брокеры и копии партиций */
   .rb-analogy{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px}
   .rb-analogy > div{border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:var(--surface-2); font-size:14px}
@@ -2268,6 +2278,73 @@ message Quote {
     <div class="console" id="rw-msg">Выбери шаг.</div>
   </div>
 
+  <div class="card" id="amqp">
+    <h2><span class="tag">AMQP</span> протокол: на каком языке приложение разговаривает с RabbitMQ</h2>
+    <p><b>Протокол — это правила разговора</b>: кто что говорит, в каком порядке и в каком виде. HTTP — правила разговора браузера с сайтом. <b>AMQP</b> (Advanced Message Queuing Protocol) — правила разговора приложения с брокером сообщений. RabbitMQ говорит на AMQP 0-9-1: любое приложение на любом языке, которое знает эти правила, может отправлять и получать сообщения.</p>
+    <div class="rb-analogy">
+      <div><b>🏦 Откуда взялся.</b> В 2003 году банк JPMorgan устал платить за закрытые системы обмена сообщениями, которые не умели говорить друг с другом. Сделали открытый стандарт: один протокол — и брокеры разных производителей понимают любых клиентов. RabbitMQ (2007) — самая известная его реализация.</div>
+      <div><b>📞 Как в жизни.</b> Похоже на звонок в call-центр: сначала соединение и «здравствуйте, я такой-то» (подключение и вход), потом по одной линии идут несколько разговоров (каналы), каждое обращение регистрируют под номером, а в конце оператор подтверждает: «принято».</div>
+    </div>
+
+    <h3 style="margin-top:18px">Из чего состоит модель AMQP</h3>
+    <div class="amqp-pipe" id="amqp-pipe">
+      <div class="amqp-node" data-n="conn"><b>Соединение</b><small>одно TCP-подключение, порт 5672</small></div>
+      <div class="amqp-node" data-n="chan"><b>Канал</b><small>лёгкий «разговор» внутри соединения</small></div>
+      <div class="amqp-node" data-n="exch"><b>Обменник</b><small>принимает сообщение и решает, куда отправить</small></div>
+      <div class="amqp-node" data-n="bind"><b>Привязка</b><small>правило «ключ → очередь»</small></div>
+      <div class="amqp-node" data-n="queue"><b>Очередь</b><small>хранит, пока не заберут</small></div>
+      <div class="amqp-node" data-n="cons"><b>Консюмер</b><small>получает и подтверждает</small></div>
+    </div>
+    <p class="ls" style="margin-top:8px">Главная особенность AMQP: <b>продюсер никогда не пишет в очередь напрямую</b>. Он отдаёт сообщение обменнику с ключом маршрутизации, а обменник по привязкам решает, в какие очереди положить копии. И ещё одна: схему — обменники, очереди, привязки — <b>объявляет само приложение</b> командами протокола, а не администратор руками.</p>
+
+    <h3 style="margin-top:18px">Разговор по шагам: одно сообщение от продюсера до консюмера</h3>
+    <p class="ls" style="margin-top:0">Жмите «Шаг →». Слева — кто говорит, в моноширинном — команда протокола, как её видно в логах и в коде.</p>
+    <div class="form-row">
+      <button class="ghost" id="amqp-prev">← Назад</button>
+      <button class="act" id="amqp-next">Шаг →</button>
+      <button class="ghost" id="amqp-reset">↻ С начала</button>
+      <span class="rb-lbl" id="amqp-count"></span>
+    </div>
+    <div class="tl" id="amqp-log"></div>
+    <div class="console" id="amqp-msg">Нажмите «Шаг →» — приложение начнёт разговор с брокером.</div>
+
+    <h3 style="margin-top:20px">Что лежит в сообщении AMQP, кроме тела</h3>
+    <div class="table-wrap"><table class="db">
+      <thead><tr><th>Свойство</th><th>Что значит</th><th>Зачем аналитику</th></tr></thead>
+      <tbody>
+        <tr><td><code class="inl">delivery_mode = 2</code></td><td>Сообщение сохраняется на диск</td><td>Без этого (и без durable-очереди) перезапуск брокера стирает сообщения</td></tr>
+        <tr><td><code class="inl">message_id</code></td><td>Уникальный номер сообщения</td><td>По нему получатель отсекает дубли</td></tr>
+        <tr><td><code class="inl">correlation_id</code>, <code class="inl">reply_to</code></td><td>«На какой запрос это ответ» и «куда прислать ответ»</td><td>Запрос-ответ через брокер</td></tr>
+        <tr><td><code class="inl">content_type</code></td><td>Формат тела: application/json, avro…</td><td>Получатель знает, как читать</td></tr>
+        <tr><td><code class="inl">expiration</code></td><td>Срок жизни сообщения</td><td>Устаревшее не доставляется: предложение курьеру на 20 секунд</td></tr>
+        <tr><td><code class="inl">priority</code></td><td>Приоритет 0–9</td><td>Работает только в priority-очереди</td></tr>
+        <tr><td><code class="inl">headers</code></td><td>Любые свои пары «ключ — значение»</td><td>Трассировка (traceparent), маршрутизация обменником headers</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 style="margin-top:20px">Четыре подтверждения, которые даёт протокол</h3>
+    <div class="grid2">
+      <div class="lane"><h4>Publisher confirm: брокер → продюсеру</h4><p class="ls">«Сообщение принято и сохранено». Включается командой <code class="inl">confirm.select</code>. Без него продюсер не знает, дошло ли сообщение.</p></div>
+      <div class="lane"><h4>basic.return: брокер → продюсеру</h4><p class="ls">«Ни одна очередь не подошла». Приходит, если продюсер отправил с флагом <code class="inl">mandatory</code>. Без флага такое сообщение молча пропадает.</p></div>
+      <div class="lane"><h4>basic.ack: консюмер → брокеру</h4><p class="ls">«Обработал, можно удалять». Шлётся после обработки — так получается at least once.</p></div>
+      <div class="lane"><h4>basic.nack / reject: консюмер → брокеру</h4><p class="ls">«Не смог». С <code class="inl">requeue=true</code> — вернуть в очередь, с <code class="inl">false</code> — отправить в dead-letter exchange.</p></div>
+    </div>
+
+    <h3 style="margin-top:20px">Когда что: AMQP и соседние протоколы</h3>
+    <div class="table-wrap"><table class="db">
+      <thead><tr><th>Ситуация</th><th>Протокол</th><th>Почему</th></tr></thead>
+      <tbody>
+        <tr><td>Сервисы общаются через RabbitMQ</td><td><b>AMQP 0-9-1</b></td><td>Родной протокол RabbitMQ: обменники, очереди, подтверждения</td></tr>
+        <tr><td>Нужно подключиться к Azure Service Bus, ActiveMQ Artemis, брокерам разных производителей</td><td><b>AMQP 1.0</b></td><td>Международный стандарт (ISO/IEC 19464). Несмотря на имя, это <b>другой</b> протокол: в нём нет обменников и привязок. RabbitMQ 4 понимает и его</td></tr>
+        <tr><td>Датчики, умные устройства, мобильная связь с перебоями</td><td><b>MQTT</b></td><td>Очень лёгкий протокол для слабых устройств и плохой связи; RabbitMQ принимает и его через плагин</td></tr>
+        <tr><td>Браузер общается с брокером напрямую</td><td><b>STOMP</b> поверх WebSocket</td><td>Простой текстовый протокол, удобно из JavaScript</td></tr>
+        <tr><td>Kafka</td><td><b>Свой протокол Kafka</b> (порт 9092)</td><td>Kafka не говорит на AMQP: клиент сам запрашивает пачки сообщений (pull), маршрутизации нет</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note good"><b>Что из AMQP попадает в постановку:</b> имя и тип обменника, ключи маршрутизации, имена очередей и их аргументы (<code class="inl">x-queue-type=quorum</code>, <code class="inl">x-dead-letter-exchange</code>, <code class="inl">x-message-ttl</code>), сохранение на диск (durable + <code class="inl">delivery_mode=2</code>), publisher confirms, prefetch и режим подтверждения консюмера, обязательные свойства сообщения (<code class="inl">message_id</code>, <code class="inl">content_type</code>), виртуальный хост.</div>
+    <div class="note bad"><b>Красный флаг:</b> «отправим в очередь orders» без обменника и ключа. В AMQP продюсер пишет в обменник — значит, в постановке должны быть и обменник, и ключ, и привязка. Иначе каждый разработчик придумает маршрут по-своему.</div>
+  </div>
+
   <div class="card">
     <h2><span class="tag">ДЕМО</span> обменники: куда попадёт сообщение</h2>
     <p>В проектах межсистемного взаимодействия аналитику важно определить <b>способ маршрутизации</b> сообщений между приложениями — он задаётся <b>типом обменника</b>. Выбери тип, задай ключ маршрутизации и опубликуй.</p>
@@ -3646,6 +3723,40 @@ renderNum('kfk-flow', [
   $$('.rb-rf').forEach(x => x.addEventListener('click', () => { rf = +x.dataset.rf; render(); say(); }));
   $('#rb-reset').addEventListener('click', () => { down = [false,false,false]; render(); say(); });
   render(); say();
+})();
+
+(function(){ /* AMQP: разговор приложения с брокером по шагам */
+  const S = [
+    {who:'Приложение → брокер', cmd:'TCP :5672 · «AMQP 0 0 9 1»', n:['conn'], t:'Открывает одно TCP-соединение и первой же строкой называет протокол и версию. Брокер, который не говорит на этой версии, сразу закроет соединение.'},
+    {who:'Брокер ↔ приложение', cmd:'connection.start / start-ok / tune / open', n:['conn'], t:'Знакомство: брокер называет способы входа, приложение отдаёт логин и пароль; договариваются о размере кадра и «пульсе» (heartbeat — проверка, что собеседник жив); выбирают виртуальный хост — изолированное «пространство» брокера, например <b>/shop</b>.'},
+    {who:'Приложение → брокер', cmd:'channel.open', n:['chan'], t:'Открывает канал — лёгкий разговор внутри соединения. Соединение дорогое, каналы дешёвые: у сервиса одно соединение и по каналу на поток работы.'},
+    {who:'Приложение → брокер', cmd:'exchange.declare shop.events type=topic durable', n:['chan','exch'], t:'Объявляет обменник. «Объявить» — значит «создай, если его ещё нет». Схему маршрутов приложение строит само, командами протокола.'},
+    {who:'Приложение → брокер', cmd:'queue.declare bonus durable x-queue-type=quorum', n:['chan','queue'], t:'Объявляет очередь со свойствами: переживёт перезапуск (durable), хранится на нескольких узлах (quorum).'},
+    {who:'Приложение → брокер', cmd:'queue.bind bonus ← shop.events  key=order.paid.*', n:['exch','bind','queue'], t:'Привязка: «всё, что пришло в shop.events с ключом order.paid.что-угодно, клади в очередь bonus».'},
+    {who:'Продюсер → брокер', cmd:'confirm.select', n:['chan'], t:'Просит брокер подтверждать каждое принятое сообщение (publisher confirms). Без этого продюсер отправляет «в темноту».'},
+    {who:'Продюсер → брокер', cmd:'basic.publish exchange=shop.events key=order.paid.moscow', n:['chan','exch'], t:'Отправляет сообщение <b>обменнику</b>, а не в очередь. С ним уходят свойства: delivery_mode=2 (на диск), message_id, content_type=application/json — и само тело.'},
+    {who:'Брокер, внутри', cmd:'маршрутизация по привязкам', n:['exch','bind','queue'], t:'Обменник сверяет ключ order.paid.moscow с привязками: подходит order.paid.* — копия ложится в очередь bonus. Не подошла ни одна — сообщение пропадёт, если продюсер не просил вернуть его (флаг mandatory → basic.return).'},
+    {who:'Брокер → продюсер', cmd:'basic.ack (publisher confirm)', n:['chan'], t:'«Принял и сохранил». Только теперь продюсер может считать сообщение отправленным и, например, отметить его в outbox.'},
+    {who:'Консюмер → брокер', cmd:'basic.qos prefetch=20 · basic.consume bonus', n:['queue','cons'], t:'Консюмер подписывается на очередь и говорит: «держи у меня не больше 20 неподтверждённых». Дальше брокер сам присылает сообщения — это и есть push.'},
+    {who:'Брокер → консюмер', cmd:'basic.deliver delivery_tag=1', n:['queue','cons'], t:'Брокер отдаёт сообщение с номером доставки. Пока нет подтверждения, сообщение висит как «выдано, но не подтверждено» (unacked).'},
+    {who:'Консюмер → брокер', cmd:'basic.ack delivery_tag=1', n:['cons','queue'], t:'После обработки консюмер подтверждает — брокер удаляет сообщение из очереди. Упади консюмер до ack — брокер отдаст сообщение другому: это at least once.'},
+    {who:'Консюмер → брокер', cmd:'basic.nack delivery_tag=2 requeue=false', n:['cons','queue'], t:'Если обработать не удалось: requeue=true — вернуть в очередь, requeue=false — отправить в dead-letter exchange, то есть в DLQ. Бесконечный requeue битого сообщения крутит его по кругу.'}
+  ];
+  let i = 0;
+  function render(){
+    $$('#amqp-pipe .amqp-node').forEach(x => x.classList.toggle('on', i > 0 && S[i-1].n.includes(x.dataset.n)));
+    $('#amqp-log').innerHTML = S.slice(0, i).map((x,k) => `<div class="tlrow"${k < i - 1 ? ' style="animation:none"' : ''}><span class="tn">${k+1}</span><span class="tt"><span class="amqp-dir">${x.who}</span><span class="amqp-cmd">${esc(x.cmd)}</span>${x.t}</span></div>`).join('');
+    $('#amqp-count').textContent = 'шаг ' + i + ' из ' + S.length;
+    $('#amqp-prev').disabled = i === 0;
+    $('#amqp-next').disabled = i === S.length;
+    if (i === 0) msg($('#amqp-msg'), '', 'Нажмите «Шаг →» — приложение начнёт разговор с брокером.');
+    else if (i === S.length) msg($('#amqp-msg'), 'ok', 'Весь путь: соединение → канал → схема (обменник, очередь, привязка) → публикация с подтверждением → доставка консюмеру → ack или nack. Это и есть AMQP.');
+    else msg($('#amqp-msg'), '', 'Подсвечено, какие части модели участвуют в этом шаге.');
+  }
+  $('#amqp-next').addEventListener('click', () => { if (i < S.length){ i++; render(); } });
+  $('#amqp-prev').addEventListener('click', () => { if (i > 0){ i--; render(); } });
+  $('#amqp-reset').addEventListener('click', () => { i = 0; render(); });
+  render();
 })();
 
 (function(){ /* ISR */
