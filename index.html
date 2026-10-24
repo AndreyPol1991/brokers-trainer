@@ -230,15 +230,173 @@
   .rep .rcells{display:flex; gap:3px; flex-wrap:wrap; margin-top:8px}
   .rep .rcells .ocell{padding:3px 6px; font-size:10.5px}
 
-  /* AMQP: модель и разговор по шагам */
-  .amqp-pipe{display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:10px}
-  @media (max-width:860px){.amqp-pipe{grid-template-columns:repeat(2,1fr)}}
-  .amqp-node{position:relative; border:1.5px solid var(--line); border-radius:10px; padding:10px 11px; background:var(--surface-2); display:flex; flex-direction:column; gap:3px; transition:border-color .2s, background .2s, box-shadow .2s}
-  .amqp-node b{font-size:13.5px}
-  .amqp-node small{font-size:11.5px; color:var(--muted); line-height:1.35}
-  .amqp-node.on{border-color:var(--rmq); background:color-mix(in srgb,var(--rmq) 12%,var(--surface)); box-shadow:0 0 0 3px color-mix(in srgb,var(--rmq) 20%,transparent)}
-  .amqp-cmd{font:600 12px var(--mono); color:var(--rmq); display:block; margin:1px 0 3px}
-  .amqp-dir{font:600 10.5px var(--mono); text-transform:uppercase; letter-spacing:.03em; color:var(--faint)}
+  /* симулятор «очередь против журнала» и лаборатория идемпотентности */
+  .ql-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px}
+  @media (max-width:1000px){.ql-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.ql-grid{grid-template-columns:1fr}}
+  .ql-col{border:1.5px solid var(--line); border-radius:12px; padding:11px; background:var(--surface-2); display:flex; flex-direction:column; gap:8px; min-width:0}
+  .ql-col.fit{border-color:var(--ok); box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 18%,transparent)}
+  .ql-col.nofit{opacity:.62}
+  .ql-h{display:flex; justify-content:space-between; gap:6px; align-items:baseline; flex-wrap:wrap}
+  .ql-h b{font-size:13.5px}
+  .ql-h small{font:600 10.5px var(--mono); color:var(--muted)}
+  .ql-badge{font:700 10.5px var(--mono); border-radius:999px; padding:2px 8px; border:1px solid var(--line)}
+  .ql-col.fit .ql-badge{border-color:var(--ok); color:var(--ok); background:var(--ok-bg)}
+  .ql-v{display:flex; flex-direction:column; gap:3px; font-size:12px}
+  .ql-v div{display:flex; justify-content:space-between; gap:6px}
+  .ql-v span:last-child{font-weight:600; text-align:right}
+  .ql-v .y{color:var(--ok)} .ql-v .n{color:var(--danger)} .ql-v .w{color:var(--warn)}
+  .ql-lanes{display:flex; flex-direction:column; gap:4px}
+  .ql-lane{display:flex; gap:4px; align-items:center; flex-wrap:wrap; font:600 10.5px var(--mono); color:var(--faint); min-height:22px}
+  .ql-lane.idle{opacity:.55}
+  .ql-m{font:700 10.5px var(--mono); border-radius:4px; padding:1px 5px; color:#fff; background:var(--kc)}
+  .ql-m.bad{outline:2px solid var(--danger); outline-offset:1px}
+  .ql-m.slow{background:repeating-linear-gradient(45deg,var(--kc),var(--kc) 4px,color-mix(in srgb,var(--kc) 60%,#000) 4px,color-mix(in srgb,var(--kc) 60%,#000) 8px)}
+  .ql-m.wait{opacity:.4}
+  .ql-more{margin-top:12px; border:1px solid var(--line); border-radius:10px; padding:8px 12px; background:var(--surface-2)}
+  .ql-more summary{cursor:pointer; font-weight:600; font-size:13.5px}
+  .id-ops{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px}
+  @media (max-width:860px){.id-ops{grid-template-columns:1fr}}
+  .id-op{appearance:none; text-align:left; font:inherit; color:var(--ink); border:1.5px solid var(--line); border-radius:10px; padding:9px 11px; background:var(--surface-2); cursor:pointer; display:flex; flex-direction:column; gap:3px}
+  .id-op b{font-size:13.5px}
+  .id-op small{font-size:12px; color:var(--muted)}
+  .id-op[aria-pressed="true"]{border-color:var(--kv); background:color-mix(in srgb,var(--kv) 10%,var(--surface))}
+  .id-op.solved b::after{content:" ✓"; color:var(--ok)}
+  .id-stage{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:8px; align-items:stretch; margin-top:12px}
+  @media (max-width:860px){.id-stage{grid-template-columns:1fr}}
+  .id-box{border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; background:var(--surface-2); display:flex; flex-direction:column; gap:6px}
+  .id-box .pr-lt{margin:0}
+  .id-arrow{align-self:center; font-size:20px; color:var(--faint); text-align:center}
+  .id-msgs{display:flex; flex-direction:column; gap:5px}
+  .id-m{font:600 12px var(--mono); border:1px solid var(--line); border-radius:7px; padding:5px 8px; background:var(--surface)}
+  .id-m.dup{border-color:var(--warn); background:var(--warn-bg)}
+  .id-res{font-size:14px; font-weight:600}
+  .id-box.ok{border-color:var(--ok); background:var(--ok-bg)} .id-box.ok .id-res{color:var(--ok)}
+  .id-box.bad{border-color:var(--danger); background:var(--danger-bg)} .id-box.bad .id-res{color:var(--danger)}
+  .id-box.mid{border-color:var(--warn); background:var(--warn-bg)} .id-box.mid .id-res{color:var(--warn)}
+
+  /* протоколы под микроскопом */
+  .pm-map{display:grid; grid-template-columns:1.2fr .9fr 1.2fr; gap:12px; margin-top:12px; align-items:center}
+  @media (max-width:860px){.pm-map{grid-template-columns:1fr}}
+  .pm-clients{display:flex; flex-direction:column; gap:8px}
+  .pm-node{appearance:none; text-align:left; font:inherit; color:var(--ink); border:1.5px solid var(--line); border-radius:10px; padding:8px 11px; background:var(--surface-2); cursor:pointer; display:flex; align-items:center; gap:10px; position:relative}
+  .pm-node .pm-ic{font-size:20px; flex:none}
+  .pm-node b{font-size:13px; display:block}
+  .pm-node small{font:600 11px var(--mono); color:var(--muted)}
+  .pm-node::after{content:"→"; position:absolute; right:-14px; top:50%; transform:translateY(-50%); color:var(--faint); font-weight:700}
+  @media (max-width:860px){.pm-node::after{content:none}}
+  .pm-node.on{border-color:var(--pc); background:color-mix(in srgb,var(--pc) 12%,var(--surface)); box-shadow:0 0 0 3px color-mix(in srgb,var(--pc) 20%,transparent)}
+  .pm-node.on small{color:var(--pc)}
+  .pm-node:focus-visible{outline:2px solid var(--pc); outline-offset:2px}
+  .pm-broker{border:2px solid var(--rmq); border-radius:14px; padding:12px; background:color-mix(in srgb,var(--rmq) 7%,var(--surface)); text-align:center}
+  .pm-broker.kfk{border-color:var(--kfk); background:color-mix(in srgb,var(--kfk) 7%,var(--surface))}
+  .pm-broker b{font-size:14px}
+  .pm-broker .pm-plugs{display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:8px}
+  .pm-broker .pm-plugs span{font:600 10.5px var(--mono); border:1px solid var(--line); border-radius:999px; padding:2px 7px; background:var(--surface)}
+  .pm-broker .pm-plugs span.on{border-color:var(--pc); color:var(--pc)}
+  .pm-broker small{display:block; color:var(--muted); font-size:11.5px; margin-top:6px}
+  .pm-chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:14px}
+  .pm-chip{appearance:none; font:700 13px var(--mono); padding:7px 14px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer}
+  .pm-chip[aria-pressed="true"]{border-color:var(--pc); color:var(--pc); background:color-mix(in srgb,var(--pc) 12%,var(--surface))}
+  .pm-top{display:grid; grid-template-columns:.9fr 1.3fr; gap:14px; margin-top:14px; align-items:start}
+  @media (max-width:900px){.pm-top{grid-template-columns:1fr}}
+  .pm-right{min-width:0}
+  .pm-card{border:1.5px solid var(--pc); border-radius:12px; padding:13px 14px; background:var(--surface-2)}
+  .pm-card h4{margin:0 0 2px; font-size:16px; color:var(--pc)}
+  .pm-card .pm-one{font-size:13.5px; color:var(--muted); margin:0 0 10px}
+  .pm-card dl{display:grid; grid-template-columns:auto 1fr; gap:6px 12px; margin:0; font-size:13px}
+  .pm-card dt{font:600 11px var(--mono); color:var(--faint); text-transform:uppercase; letter-spacing:.03em; padding-top:2px}
+  .pm-card dd{margin:0}
+  .pm-sub{font:700 14px var(--sans)}
+  .pm-wire{display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; border:1px solid var(--line); border-radius:12px; background:var(--surface-2); padding:12px}
+  .pm-wire.txt{flex-direction:column; gap:3px}
+  .pm-seg{appearance:none; border:1.5px solid var(--line); border-radius:7px; background:var(--surface); color:var(--ink); padding:5px 8px; font:600 12px var(--mono); cursor:pointer; display:flex; flex-direction:column; gap:2px; text-align:left; max-width:100%}
+  .pm-seg small{font:500 10.5px var(--sans); color:var(--muted)}
+  .pm-seg.h{border-color:color-mix(in srgb,var(--pc) 70%,var(--line))}
+  .pm-seg.m{border-color:var(--line); border-style:dashed}
+  .pm-seg.b{border-color:var(--ok); background:var(--ok-bg)}
+  .pm-seg.sep{border:0; background:none; padding:2px 0; font:700 11px var(--sans); color:var(--faint); flex-basis:100%; cursor:default}
+  .pm-seg.on{box-shadow:0 0 0 3px color-mix(in srgb,var(--pc) 30%,transparent)}
+  .pm-wire.txt .pm-seg{flex-direction:row; align-items:baseline; gap:10px; white-space:pre-wrap; word-break:break-all}
+  .pm-bars{display:flex; flex-direction:column; gap:7px; margin-top:10px}
+  .pm-bar{display:grid; grid-template-columns:120px 1fr 64px; gap:10px; align-items:center; font-size:13px}
+  @media (max-width:560px){.pm-bar{grid-template-columns:90px 1fr 54px}}
+  .pm-bar .pm-lbl{font:700 12px var(--mono)}
+  .pm-bar .pm-track{display:block; height:16px; border-radius:6px; background:var(--surface-3); overflow:hidden}
+  .pm-bar .pm-fill{display:block; height:100%; border-radius:6px; background:var(--faint); transition:width .5s ease}
+  .pm-bar.on .pm-fill{background:var(--pc)}
+  .pm-bar.on .pm-lbl{color:var(--pc)}
+  .pm-bar .pm-val{font:700 12px var(--mono); text-align:right; font-variant-numeric:tabular-nums}
+
+  /* AMQP: песочница, диаграмма разговора, конверт */
+  .aq-ctl{display:flex; flex-direction:column; gap:8px; margin-top:8px}
+  .aq-grp{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+  .aq-chips{display:flex; flex-wrap:wrap; gap:6px}
+  .aq-chip{appearance:none; border:1.5px solid var(--line); background:var(--surface-2); color:var(--ink); border-radius:999px; padding:5px 12px; font:600 12.5px var(--mono); cursor:pointer}
+  .aq-chip[aria-pressed="true"]{border-color:var(--rmq); color:var(--rmq); background:color-mix(in srgb,var(--rmq) 12%,var(--surface))}
+  .aq-chip:focus-visible{outline:2px solid var(--rmq); outline-offset:2px}
+  .aq-flags label{display:flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:8px; padding:5px 10px; font-size:13px; background:var(--surface-2); cursor:pointer}
+  .aq-flags label code{font:600 12px var(--mono)}
+  .aq-stage{display:grid; grid-template-columns:1fr 1fr 1.6fr; gap:12px; margin-top:12px; align-items:stretch}
+  @media (max-width:860px){.aq-stage{grid-template-columns:1fr}}
+  .aq-col{display:flex; flex-direction:column; gap:8px; min-width:0}
+  .aq-box{border:1.5px solid var(--line); border-radius:12px; padding:12px; background:var(--surface-2); display:flex; flex-direction:column; gap:6px; flex:1}
+  .aq-box small{color:var(--muted); font-size:12px}
+  .aq-box button{align-self:flex-start; margin-top:6px}
+  .aq-ex{justify-content:center; text-align:center; align-items:center}
+  .aq-flash{animation:aqflash .9s ease}
+  @keyframes aqflash{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--rmq) 60%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
+  .aq-fb{font-size:12.5px; color:var(--muted); line-height:1.4}
+  .aq-fb.ok{color:var(--ok)} .aq-fb.err{color:var(--danger)} .aq-fb.warn{color:var(--warn)}
+  .aq-q{border:1.5px solid var(--line); border-radius:10px; padding:9px 11px; background:var(--surface-2); transition:border-color .2s, background .2s}
+  .aq-q.hit{border-color:var(--ok); background:var(--ok-bg)}
+  .aq-q.dlq{border-style:dashed}
+  .aq-qh{display:flex; justify-content:space-between; gap:8px; align-items:baseline; flex-wrap:wrap}
+  .aq-qh b{font:600 12.5px var(--mono)}
+  .aq-bind{font:500 11px var(--mono); color:var(--faint)}
+  .aq-q.hit .aq-bind{color:var(--ok)}
+  .aq-msgs{display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; min-height:22px}
+  .aq-m{font:600 11px var(--mono); border:1px solid var(--line); border-radius:5px; padding:2px 6px; background:var(--surface)}
+  .aq-m.p{border-color:var(--rmq)} .aq-m.re{background:var(--warn-bg); border-color:var(--warn)}
+  .aq-empty{font-size:11.5px; color:var(--faint); font-style:italic}
+  .aq-cons{border:1.5px solid var(--line); border-radius:12px; padding:12px; margin-top:12px; background:var(--surface-2)}
+  .aq-cons.down{border-style:dashed; background:var(--danger-bg)}
+  .aq-ch{display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap}
+  .aq-unacked{display:flex; flex-direction:column; gap:6px; margin-top:8px}
+  .aq-u{display:flex; gap:8px; align-items:center; flex-wrap:wrap; border:1px solid var(--line); border-radius:8px; padding:6px 9px; background:var(--surface)}
+  .aq-u .aq-m{margin-right:auto}
+  .aq-u button{padding:4px 10px; font-size:12px}
+  .aq-split{display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start}
+  @media (max-width:860px){.aq-split{grid-template-columns:1fr}}
+  .aq-frames{margin-top:14px; border:1px solid var(--line); border-radius:9px; background:var(--surface-2); padding:9px 11px; min-height:86px}
+  .aq-fr{font:500 11.5px/1.55 var(--mono); color:var(--muted); white-space:pre-wrap; word-break:break-word}
+  .aq-fr b{color:var(--rmq); font-weight:600}
+  .aq-tasks{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px}
+  .aq-task{font-size:12.5px; border:1px dashed var(--line); border-radius:999px; padding:4px 11px; color:var(--muted)}
+  .aq-task.done{border-style:solid; border-color:var(--ok); color:var(--ok); background:var(--ok-bg)}
+  .sq{position:relative; margin-top:12px; border:1px solid var(--line); border-radius:12px; background:var(--surface-2); padding:10px 12px 12px}
+  .sq-heads{display:grid; grid-template-columns:1fr 1fr; text-align:center; font:700 12.5px var(--sans); margin-bottom:6px}
+  .sq-heads span{border:1.5px solid var(--line); border-radius:8px; padding:6px; background:var(--surface); margin:0 18%}
+  .sq-row{display:grid; grid-template-columns:24px 1fr; gap:6px; align-items:center; min-height:34px; position:relative}
+  .sq-row::before{content:""; position:absolute; left:calc(24px + (100% - 24px)*.25); top:0; bottom:0; border-left:1.5px dashed var(--line)}
+  .sq-row::after{content:""; position:absolute; left:calc(24px + (100% - 24px)*.75); top:0; bottom:0; border-left:1.5px dashed var(--line)}
+  .sq-n{font:700 11px var(--mono); color:var(--faint); text-align:center}
+  .sq-lane{position:relative; height:30px}
+  .sq-arrow{position:absolute; top:50%; left:25%; width:50%; height:0; border-top:2px solid var(--rmq); z-index:1}
+  .sq-arrow::after{content:""; position:absolute; top:-6px; right:-2px; border:5px solid transparent; border-left:8px solid var(--rmq)}
+  .sq-arrow.back::after{right:auto; left:-2px; border-left:5px solid transparent; border-right:8px solid var(--rmq)}
+  .sq-arrow.self{left:75%; width:0; border-top:0}
+  .sq-arrow.self::after{content:"⟲"; border:0; top:-12px; left:-6px; color:var(--rmq); font-size:16px}
+  .sq-cmd{position:absolute; top:calc(50% - 19px); left:25%; width:50%; text-align:center; font:600 11px var(--mono); color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 8px}
+  .sq-row.old .sq-arrow{border-top-color:var(--faint)} .sq-row.old .sq-arrow::after{border-left-color:var(--faint)} .sq-row.old .sq-arrow.back::after{border-left-color:transparent; border-right-color:var(--faint)}
+  .sq-row.old .sq-cmd{color:var(--muted); font-weight:500}
+  .sq-row.cur{background:color-mix(in srgb,var(--rmq) 8%,transparent); border-radius:6px}
+  .sq-row.new .sq-arrow{animation:sqdraw .45s ease-out}
+  @keyframes sqdraw{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+  @media (prefers-reduced-motion:reduce){.sq-row.new .sq-arrow, .aq-flash{animation:none}}
+  .env{margin-top:10px; border:1.5px solid var(--line); border-radius:12px; background:var(--surface); overflow:hidden}
+  .env-head{display:flex; flex-wrap:wrap; gap:6px; padding:10px 12px; background:var(--surface-2); border-bottom:1.5px dashed var(--line)}
+  .env-body{padding:10px 12px; font-size:13px}
 
   /* реплики с нуля: брокеры и копии партиций */
   .rb-analogy{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px}
@@ -2280,69 +2438,101 @@ message Quote {
 
   <div class="card" id="amqp">
     <h2><span class="tag">AMQP</span> протокол: на каком языке приложение разговаривает с RabbitMQ</h2>
-    <p><b>Протокол — это правила разговора</b>: кто что говорит, в каком порядке и в каком виде. HTTP — правила разговора браузера с сайтом. <b>AMQP</b> (Advanced Message Queuing Protocol) — правила разговора приложения с брокером сообщений. RabbitMQ говорит на AMQP 0-9-1: любое приложение на любом языке, которое знает эти правила, может отправлять и получать сообщения.</p>
-    <div class="rb-analogy">
-      <div><b>🏦 Откуда взялся.</b> В 2003 году банк JPMorgan устал платить за закрытые системы обмена сообщениями, которые не умели говорить друг с другом. Сделали открытый стандарт: один протокол — и брокеры разных производителей понимают любых клиентов. RabbitMQ (2007) — самая известная его реализация.</div>
-      <div><b>📞 Как в жизни.</b> Похоже на звонок в call-центр: сначала соединение и «здравствуйте, я такой-то» (подключение и вход), потом по одной линии идут несколько разговоров (каналы), каждое обращение регистрируют под номером, а в конце оператор подтверждает: «принято».</div>
-    </div>
+    <p><b>Протокол — это правила разговора</b>: кто что говорит, в каком порядке и в каком виде. HTTP — правила разговора браузера с сайтом, <b>AMQP</b> (Advanced Message Queuing Protocol) — приложения с брокером. RabbitMQ говорит на AMQP 0-9-1. Ниже всё руками: сначала песочница, потом сам разговор по шагам.</p>
 
-    <h3 style="margin-top:18px">Из чего состоит модель AMQP</h3>
-    <div class="amqp-pipe" id="amqp-pipe">
-      <div class="amqp-node" data-n="conn"><b>Соединение</b><small>одно TCP-подключение, порт 5672</small></div>
-      <div class="amqp-node" data-n="chan"><b>Канал</b><small>лёгкий «разговор» внутри соединения</small></div>
-      <div class="amqp-node" data-n="exch"><b>Обменник</b><small>принимает сообщение и решает, куда отправить</small></div>
-      <div class="amqp-node" data-n="bind"><b>Привязка</b><small>правило «ключ → очередь»</small></div>
-      <div class="amqp-node" data-n="queue"><b>Очередь</b><small>хранит, пока не заберут</small></div>
-      <div class="amqp-node" data-n="cons"><b>Консюмер</b><small>получает и подтверждает</small></div>
+    <h3 style="margin-top:16px">🧪 Песочница: отправьте сообщение и проследите, что с ним будет</h3>
+    <div class="aq-ctl">
+      <div class="aq-grp"><span class="rb-lbl">обменник shop.events:</span><span class="aq-chips" id="aq-type"></span></div>
+      <div class="aq-grp"><span class="rb-lbl">ключ:</span><span class="aq-chips" id="aq-key"></span></div>
+      <div class="aq-grp aq-flags" id="aq-flags"></div>
     </div>
-    <p class="ls" style="margin-top:8px">Главная особенность AMQP: <b>продюсер никогда не пишет в очередь напрямую</b>. Он отдаёт сообщение обменнику с ключом маршрутизации, а обменник по привязкам решает, в какие очереди положить копии. И ещё одна: схему — обменники, очереди, привязки — <b>объявляет само приложение</b> командами протокола, а не администратор руками.</p>
+    <div class="aq-stage">
+      <div class="aq-col">
+        <div class="aq-box aq-prod" id="aq-prod"><b>📤 Продюсер</b><small>сервис заказов</small>
+          <button class="act" id="aq-pub">Опубликовать</button>
+          <div class="aq-fb" id="aq-pfb">Выберите ключ и нажмите «Опубликовать».</div>
+        </div>
+      </div>
+      <div class="aq-col">
+        <div class="aq-box aq-ex" id="aq-ex"><b>🔀 Обменник</b><small id="aq-exsub"></small></div>
+      </div>
+      <div class="aq-col aq-qs" id="aq-qs"></div>
+    </div>
+    <div class="aq-cons" id="aq-cons"></div>
+    <div class="form-row">
+      <button class="ghost" id="aq-crash">💥 Консюмер упал</button>
+      <button class="ghost" id="aq-restart">🔄 Перезапустить брокер</button>
+      <button class="ghost" id="aq-clear">↻ Очистить</button>
+    </div>
+    <div class="aq-split">
+      <div class="console" id="aq-msg">Попробуйте: ключ, который не подходит ни к одной привязке, с «подтверждением» и без «mandatory». Подтверждение придёт, а сообщения нет нигде.</div>
+      <div class="aq-frames"><div class="pr-lt">📡 Что ушло по проводу (команды AMQP)</div><div id="aq-frames"></div></div>
+    </div>
+    <div class="aq-tasks" id="aq-tasks"></div>
 
-    <h3 style="margin-top:18px">Разговор по шагам: одно сообщение от продюсера до консюмера</h3>
-    <p class="ls" style="margin-top:0">Жмите «Шаг →». Слева — кто говорит, в моноширинном — команда протокола, как её видно в логах и в коде.</p>
+    <h3 style="margin-top:22px">🗣 Разговор по шагам: что приложение и брокер говорят друг другу</h3>
     <div class="form-row">
       <button class="ghost" id="amqp-prev">← Назад</button>
       <button class="act" id="amqp-next">Шаг →</button>
       <button class="ghost" id="amqp-reset">↻ С начала</button>
       <span class="rb-lbl" id="amqp-count"></span>
     </div>
-    <div class="tl" id="amqp-log"></div>
+    <div class="sq" id="amqp-seq"></div>
     <div class="console" id="amqp-msg">Нажмите «Шаг →» — приложение начнёт разговор с брокером.</div>
 
-    <h3 style="margin-top:20px">Что лежит в сообщении AMQP, кроме тела</h3>
-    <div class="table-wrap"><table class="db">
-      <thead><tr><th>Свойство</th><th>Что значит</th><th>Зачем аналитику</th></tr></thead>
-      <tbody>
-        <tr><td><code class="inl">delivery_mode = 2</code></td><td>Сообщение сохраняется на диск</td><td>Без этого (и без durable-очереди) перезапуск брокера стирает сообщения</td></tr>
-        <tr><td><code class="inl">message_id</code></td><td>Уникальный номер сообщения</td><td>По нему получатель отсекает дубли</td></tr>
-        <tr><td><code class="inl">correlation_id</code>, <code class="inl">reply_to</code></td><td>«На какой запрос это ответ» и «куда прислать ответ»</td><td>Запрос-ответ через брокер</td></tr>
-        <tr><td><code class="inl">content_type</code></td><td>Формат тела: application/json, avro…</td><td>Получатель знает, как читать</td></tr>
-        <tr><td><code class="inl">expiration</code></td><td>Срок жизни сообщения</td><td>Устаревшее не доставляется: предложение курьеру на 20 секунд</td></tr>
-        <tr><td><code class="inl">priority</code></td><td>Приоритет 0–9</td><td>Работает только в priority-очереди</td></tr>
-        <tr><td><code class="inl">headers</code></td><td>Любые свои пары «ключ — значение»</td><td>Трассировка (traceparent), маршрутизация обменником headers</td></tr>
-      </tbody>
-    </table></div>
-
-    <h3 style="margin-top:20px">Четыре подтверждения, которые даёт протокол</h3>
-    <div class="grid2">
-      <div class="lane"><h4>Publisher confirm: брокер → продюсеру</h4><p class="ls">«Сообщение принято и сохранено». Включается командой <code class="inl">confirm.select</code>. Без него продюсер не знает, дошло ли сообщение.</p></div>
-      <div class="lane"><h4>basic.return: брокер → продюсеру</h4><p class="ls">«Ни одна очередь не подошла». Приходит, если продюсер отправил с флагом <code class="inl">mandatory</code>. Без флага такое сообщение молча пропадает.</p></div>
-      <div class="lane"><h4>basic.ack: консюмер → брокеру</h4><p class="ls">«Обработал, можно удалять». Шлётся после обработки — так получается at least once.</p></div>
-      <div class="lane"><h4>basic.nack / reject: консюмер → брокеру</h4><p class="ls">«Не смог». С <code class="inl">requeue=true</code> — вернуть в очередь, с <code class="inl">false</code> — отправить в dead-letter exchange.</p></div>
+    <h3 style="margin-top:22px">✉️ Конверт сообщения: нажмите на любое свойство</h3>
+    <div class="env">
+      <div class="env-head" id="env-props"></div>
+      <div class="env-body"><span class="rb-lbl">тело:</span> <code class="inl">{"order_id":"ord-127453","amount":499000}</code></div>
     </div>
+    <div class="console" id="env-msg">Свойства едут рядом с телом. Брокер и получатель читают их, не разбирая само тело.</div>
 
-    <h3 style="margin-top:20px">Когда что: AMQP и соседние протоколы</h3>
+    <h3 style="margin-top:22px">Когда что: AMQP и соседние протоколы</h3>
     <div class="table-wrap"><table class="db">
       <thead><tr><th>Ситуация</th><th>Протокол</th><th>Почему</th></tr></thead>
       <tbody>
         <tr><td>Сервисы общаются через RabbitMQ</td><td><b>AMQP 0-9-1</b></td><td>Родной протокол RabbitMQ: обменники, очереди, подтверждения</td></tr>
-        <tr><td>Нужно подключиться к Azure Service Bus, ActiveMQ Artemis, брокерам разных производителей</td><td><b>AMQP 1.0</b></td><td>Международный стандарт (ISO/IEC 19464). Несмотря на имя, это <b>другой</b> протокол: в нём нет обменников и привязок. RabbitMQ 4 понимает и его</td></tr>
-        <tr><td>Датчики, умные устройства, мобильная связь с перебоями</td><td><b>MQTT</b></td><td>Очень лёгкий протокол для слабых устройств и плохой связи; RabbitMQ принимает и его через плагин</td></tr>
+        <tr><td>Подключиться к Azure Service Bus, ActiveMQ Artemis, брокерам разных производителей</td><td><b>AMQP 1.0</b></td><td>Международный стандарт (ISO/IEC 19464). Несмотря на имя, это <b>другой</b> протокол: в нём нет обменников и привязок. RabbitMQ 4 понимает и его</td></tr>
+        <tr><td>Датчики, умные устройства, связь с перебоями</td><td><b>MQTT</b></td><td>Очень лёгкий протокол для слабых устройств; RabbitMQ принимает его через плагин</td></tr>
         <tr><td>Браузер общается с брокером напрямую</td><td><b>STOMP</b> поверх WebSocket</td><td>Простой текстовый протокол, удобно из JavaScript</td></tr>
         <tr><td>Kafka</td><td><b>Свой протокол Kafka</b> (порт 9092)</td><td>Kafka не говорит на AMQP: клиент сам запрашивает пачки сообщений (pull), маршрутизации нет</td></tr>
       </tbody>
     </table></div>
-    <div class="note good"><b>Что из AMQP попадает в постановку:</b> имя и тип обменника, ключи маршрутизации, имена очередей и их аргументы (<code class="inl">x-queue-type=quorum</code>, <code class="inl">x-dead-letter-exchange</code>, <code class="inl">x-message-ttl</code>), сохранение на диск (durable + <code class="inl">delivery_mode=2</code>), publisher confirms, prefetch и режим подтверждения консюмера, обязательные свойства сообщения (<code class="inl">message_id</code>, <code class="inl">content_type</code>), виртуальный хост.</div>
-    <div class="note bad"><b>Красный флаг:</b> «отправим в очередь orders» без обменника и ключа. В AMQP продюсер пишет в обменник — значит, в постановке должны быть и обменник, и ключ, и привязка. Иначе каждый разработчик придумает маршрут по-своему.</div>
+    <div class="note good"><b>Что из AMQP попадает в постановку:</b> имя и тип обменника, ключи маршрутизации, имена очередей и их аргументы (<code class="inl">x-queue-type=quorum</code>, <code class="inl">x-dead-letter-exchange</code>, <code class="inl">x-message-ttl</code>), сохранение на диск (durable + <code class="inl">delivery_mode=2</code>), publisher confirms и <code class="inl">mandatory</code>, prefetch и режим подтверждения консюмера, обязательные свойства сообщения (<code class="inl">message_id</code>, <code class="inl">content_type</code>), виртуальный хост.</div>
+  </div>
+  <div class="card" id="protocols">
+    <h2><span class="tag">ПРОТОКОЛЫ</span> AMQP, MQTT, STOMP, Kafka — как они разговаривают, под микроскопом</h2>
+    <p>RabbitMQ понимает несколько протоколов сразу: каждому клиенту — свой язык, а внутри все сообщения попадают в одни и те же обменники и очереди. Kafka говорит только на своём. Нажмите на участника или на протокол.</p>
+
+    <div class="pm-map" id="pm-map"></div>
+    <div class="pm-chips" id="pm-chips"></div>
+
+    <div class="pm-top">
+      <div class="pm-card" id="pm-card"></div>
+      <div class="pm-right">
+        <div class="pm-sub">🗣 Разговор клиента с брокером</div>
+        <div class="form-row" style="margin-top:6px">
+          <span class="aq-chips" id="pm-var"></span>
+        </div>
+        <div class="form-row" style="margin-top:8px">
+          <button class="ghost" id="pm-prev">← Назад</button>
+          <button class="act" id="pm-next">Шаг →</button>
+          <button class="ghost" id="pm-all">▶ Весь разговор</button>
+          <span class="rb-lbl" id="pm-count"></span>
+        </div>
+        <div class="sq" id="pm-seq"></div>
+        <div class="console" id="pm-msg"></div>
+      </div>
+    </div>
+
+    <div class="pm-sub" style="margin-top:18px">🔬 Как одно и то же сообщение «заказ оплачен» выглядит на проводе</div>
+    <div class="pm-wire" id="pm-wire"></div>
+    <div class="console" id="pm-wmsg">Наведите или нажмите на кусок — подпишу, что это.</div>
+
+    <div class="pm-sub" style="margin-top:18px">📏 Сколько служебных байт уходит на одно сообщение с телом 41 байт</div>
+    <div class="pm-bars" id="pm-bars"></div>
+    <div class="note"><b>Как читать:</b> MQTT экономит каждый байт — он придуман для спутниковой связи и батареек. STOMP раздувается, потому что это текст, зато его видно глазами. Kafka на одно сообщение дорогая, но она шлёт пачками: служебная часть пачки делится на сотни сообщений.</div>
+    <div class="note good"><b>Как RabbitMQ склеивает протоколы:</b> датчик курьера публикует по MQTT в топик <code class="inl">couriers/42/location</code> — RabbitMQ меняет «/» на «.» и кладёт сообщение в обменник <code class="inl">amq.topic</code> с ключом <code class="inl">couriers.42.location</code>. Сервис на AMQP, привязанный к <code class="inl">couriers.*.location</code>, получит его, ничего не зная про MQTT. Так же браузер по STOMP отправляет в <code class="inl">/exchange/shop.events/order.paid.moscow</code> — это обычная публикация в обменник с ключом.</div>
   </div>
 
   <div class="card">
@@ -2628,9 +2818,17 @@ message Quote {
     </div>
   </div>
 
-  <div class="card when-card">
-    <h2><span class="tag">КОГДА ЧТО</span> share groups, consumer groups, streams — что брать</h2>
-    <div class="table-wrap"><table class="db">
+  <div class="card" id="qlog">
+    <h2><span class="tag">СИМУЛЯТОР</span> одна нагрузка — четыре способа читать: consumer group, share group, quorum queue, stream</h2>
+    <p>Двенадцать сообщений по четырём заказам: A1, B1, C1, D1, A2… В Kafka топик из трёх партиций, ключ — заказ. Меняйте число воркеров, «подвесьте» B2 и отметьте, что нужно бизнесу, — подходящие варианты подсветятся.</p>
+    <div class="aq-ctl">
+      <div class="aq-grp"><span class="rb-lbl">воркеров:</span><span class="aq-chips" id="ql-n"></span></div>
+      <div class="aq-grp aq-flags" id="ql-flags"></div>
+    </div>
+    <div class="ql-grid" id="ql-grid"></div>
+    <div class="console" id="ql-msg"></div>
+    <details class="ql-more"><summary>Сводная таблица «что брать»</summary>
+<div class="table-wrap"><table class="db">
         <thead><tr><th>Ситуация</th><th>Что берём</th><th>Почему</th><th>Чем платим</th></tr></thead>
         <tbody>
           <tr><td>Порядок по ключу важен (статусы заказа)</td><td><b>Consumer group</b> Kafka</td><td>Партиция читается одним консюмером — порядок держится</td><td>Параллелизм упирается в число партиций</td></tr>
@@ -2639,6 +2837,7 @@ message Quote {
           <tr><td>Надёжная очередь задач в RabbitMQ</td><td><b>Quorum queue</b></td><td>Стандарт по умолчанию вместо classic</td><td>Чуть медленнее classic</td></tr>
         </tbody>
     </table></div>
+    </details>
   </div>
 
   <div class="card">
@@ -3058,9 +3257,16 @@ message Quote {
     <div class="note"><b>Формула для запоминания:</b> at least once без идемпотентности = бомба замедленного действия. Способы: журнал обработанных id (как справа), UPSERT вместо INSERT, «установить значение» вместо «прибавить».</div>
   </div>
 
-  <div class="card when-card">
-    <h2><span class="tag">КОГДА ЧТО</span> какой способ идемпотентности под какую операцию</h2>
-    <div class="table-wrap"><table class="db">
+  <div class="card" id="idem">
+    <h2><span class="tag">ЛАБОРАТОРИЯ</span> какой способ идемпотентности под какую операцию — проверьте сами</h2>
+    <p>Выберите операцию и способ защиты, нажмите «Прогнать». Брокер доставит сообщение <b>дважды</b> (at least once) — или, для статусов, <b>не по порядку</b>. Посмотрите, что станет с данными.</p>
+    <div class="id-ops" id="idl-ops"></div>
+    <div class="aq-grp" style="margin-top:12px"><span class="rb-lbl">способ:</span><span class="aq-chips" id="idl-ms"></span></div>
+    <div class="form-row"><button class="act" id="idl-run">▶ Прогнать</button><span class="rb-lbl" id="idl-score"></span></div>
+    <div class="id-stage" id="idl-stage"></div>
+    <div class="console" id="idl-msg">Выберите операцию и способ.</div>
+    <details class="ql-more"><summary>Сводная таблица способов</summary>
+<div class="table-wrap"><table class="db">
         <thead><tr><th>Ситуация</th><th>Способ</th><th>Почему</th><th>Чем платим</th></tr></thead>
         <tbody>
           <tr><td>Начислить баллы, отправить СМС — побочный эффект</td><td><b>Журнал обработанных event_id</b> с уникальностью</td><td>Пришёл повтор — id уже есть, пропускаем</td><td>Таблица растёт: чистим через 7–30 дней</td></tr>
@@ -3070,6 +3276,7 @@ message Quote {
           <tr><td>Вызов внешнего API: банк, эквайринг</td><td><b>Ключ идемпотентности</b> в запросе</td><td>Внешняя система сама отсекает повтор</td><td>Внешний API должен это поддерживать — спросите</td></tr>
         </tbody>
     </table></div>
+    </details>
   </div>
 
   <div class="card">
@@ -3725,37 +3932,509 @@ renderNum('kfk-flow', [
   render(); say();
 })();
 
-(function(){ /* AMQP: разговор приложения с брокером по шагам */
-  const S = [
-    {who:'Приложение → брокер', cmd:'TCP :5672 · «AMQP 0 0 9 1»', n:['conn'], t:'Открывает одно TCP-соединение и первой же строкой называет протокол и версию. Брокер, который не говорит на этой версии, сразу закроет соединение.'},
-    {who:'Брокер ↔ приложение', cmd:'connection.start / start-ok / tune / open', n:['conn'], t:'Знакомство: брокер называет способы входа, приложение отдаёт логин и пароль; договариваются о размере кадра и «пульсе» (heartbeat — проверка, что собеседник жив); выбирают виртуальный хост — изолированное «пространство» брокера, например <b>/shop</b>.'},
-    {who:'Приложение → брокер', cmd:'channel.open', n:['chan'], t:'Открывает канал — лёгкий разговор внутри соединения. Соединение дорогое, каналы дешёвые: у сервиса одно соединение и по каналу на поток работы.'},
-    {who:'Приложение → брокер', cmd:'exchange.declare shop.events type=topic durable', n:['chan','exch'], t:'Объявляет обменник. «Объявить» — значит «создай, если его ещё нет». Схему маршрутов приложение строит само, командами протокола.'},
-    {who:'Приложение → брокер', cmd:'queue.declare bonus durable x-queue-type=quorum', n:['chan','queue'], t:'Объявляет очередь со свойствами: переживёт перезапуск (durable), хранится на нескольких узлах (quorum).'},
-    {who:'Приложение → брокер', cmd:'queue.bind bonus ← shop.events  key=order.paid.*', n:['exch','bind','queue'], t:'Привязка: «всё, что пришло в shop.events с ключом order.paid.что-угодно, клади в очередь bonus».'},
-    {who:'Продюсер → брокер', cmd:'confirm.select', n:['chan'], t:'Просит брокер подтверждать каждое принятое сообщение (publisher confirms). Без этого продюсер отправляет «в темноту».'},
-    {who:'Продюсер → брокер', cmd:'basic.publish exchange=shop.events key=order.paid.moscow', n:['chan','exch'], t:'Отправляет сообщение <b>обменнику</b>, а не в очередь. С ним уходят свойства: delivery_mode=2 (на диск), message_id, content_type=application/json — и само тело.'},
-    {who:'Брокер, внутри', cmd:'маршрутизация по привязкам', n:['exch','bind','queue'], t:'Обменник сверяет ключ order.paid.moscow с привязками: подходит order.paid.* — копия ложится в очередь bonus. Не подошла ни одна — сообщение пропадёт, если продюсер не просил вернуть его (флаг mandatory → basic.return).'},
-    {who:'Брокер → продюсер', cmd:'basic.ack (publisher confirm)', n:['chan'], t:'«Принял и сохранил». Только теперь продюсер может считать сообщение отправленным и, например, отметить его в outbox.'},
-    {who:'Консюмер → брокер', cmd:'basic.qos prefetch=20 · basic.consume bonus', n:['queue','cons'], t:'Консюмер подписывается на очередь и говорит: «держи у меня не больше 20 неподтверждённых». Дальше брокер сам присылает сообщения — это и есть push.'},
-    {who:'Брокер → консюмер', cmd:'basic.deliver delivery_tag=1', n:['queue','cons'], t:'Брокер отдаёт сообщение с номером доставки. Пока нет подтверждения, сообщение висит как «выдано, но не подтверждено» (unacked).'},
-    {who:'Консюмер → брокер', cmd:'basic.ack delivery_tag=1', n:['cons','queue'], t:'После обработки консюмер подтверждает — брокер удаляет сообщение из очереди. Упади консюмер до ack — брокер отдаст сообщение другому: это at least once.'},
-    {who:'Консюмер → брокер', cmd:'basic.nack delivery_tag=2 requeue=false', n:['cons','queue'], t:'Если обработать не удалось: requeue=true — вернуть в очередь, requeue=false — отправить в dead-letter exchange, то есть в DLQ. Бесконечный requeue битого сообщения крутит его по кругу.'}
+(function(){ /* AMQP: песочница — обменник, привязки, confirm, mandatory, prefetch, ack/nack */
+  const TYPES = ['topic','direct','fanout'];
+  const KEYS = ['order.paid.moscow','order.paid.kazan','order.cancelled.moscow','refund.created.kazan'];
+  const QS = [
+    {id:'bonus', name:'bonus', bind:{topic:'order.paid.*', direct:'order.paid.moscow', fanout:'(все)'}},
+    {id:'msk', name:'warehouse.msk', bind:{topic:'order.*.moscow', direct:'order.cancelled.moscow', fanout:'(все)'}},
+    {id:'audit', name:'audit', bind:{topic:'order.#', direct:'order.created.moscow', fanout:'(все)'}}
   ];
-  let i = 0;
+  const TASKS = [
+    {id:'route', t:'Сообщение легло в 2+ очереди'},
+    {id:'lost', t:'Сообщение пропало молча'},
+    {id:'ret', t:'Брокер вернул сообщение (basic.return)'},
+    {id:'redeliv', t:'Консюмер упал — сообщение пришло снова'},
+    {id:'dlq', t:'Отправили сообщение в DLQ'},
+    {id:'wiped', t:'Перезапуск стёр несохранённое'}
+  ];
+  let st;
+  const fresh = () => ({type:'topic', key:KEYS[0], persist:true, confirm:true, mandatory:false, prefetch:3, up:true,
+    q:{bonus:[], msk:[], audit:[]}, unacked:[], dlq:[], frames:[], hit:[], n:0, tag:0, done:{}});
+  st = fresh();
+
+  function match(pattern, key){
+    const p = pattern.split('.'), k = key.split('.');
+    const go = (i, j) => {
+      if (i === p.length) return j === k.length;
+      if (p[i] === '#') { for (let x = j; x <= k.length; x++) if (go(i + 1, x)) return true; return false; }
+      if (j === k.length) return false;
+      return (p[i] === '*' || p[i] === k[j]) && go(i + 1, j + 1);
+    };
+    return go(0, 0);
+  }
+  const routes = q => st.type === 'fanout' ? true : st.type === 'direct' ? q.bind.direct === st.key : match(q.bind.topic, st.key);
+  const frame = (dir, cmd, rest) => { st.frames.push({dir, cmd, rest: rest || ''}); if (st.frames.length > 9) st.frames.shift(); };
+  const done = id => { st.done[id] = true; };
+  const say = (kind, text) => msg($('#aq-msg'), kind, text);
+
+  function pump(){ /* push: брокер сам отдаёт консюмеру, пока не упрётся в prefetch */
+    if (!st.up) return 0;
+    let n = 0;
+    while (st.unacked.length < st.prefetch && st.q.bonus.length){
+      const m = st.q.bonus.shift(); m.tag = ++st.tag; st.unacked.push(m); n++;
+      frame('Б→К', 'basic.deliver', 'tag=' + m.tag + (m.re ? ' redelivered=true' : ''));
+    }
+    return n;
+  }
+
+  function publish(){
+    const id = ++st.n, m = {id, p: st.persist, re:false};
+    frame('П→Б', 'basic.publish', 'exchange=shop.events key=' + st.key + (st.mandatory ? ' mandatory' : '') + ' delivery_mode=' + (st.persist ? 2 : 1));
+    const hits = QS.filter(routes);
+    st.hit = hits.map(q => q.id);
+    hits.forEach(q => st.q[q.id].push(Object.assign({}, m)));
+    const fb = $('#aq-pfb');
+    if (!hits.length && st.mandatory) frame('Б→П', 'basic.return', '312 NO_ROUTE');
+    if (st.confirm) frame('Б→П', 'basic.ack', '(publisher confirm) seq=' + id);
+    const got = pump();
+    if (hits.length >= 2) done('route');
+    if (!hits.length && st.mandatory){
+      done('ret'); fb.className = 'aq-fb warn'; fb.textContent = '↩ Брокер вернул #' + id + ': ни одна привязка не подошла (basic.return).';
+      say('warn', `Ключ <b>${st.key}</b> не подошёл ни к одной привязке. Флаг mandatory заставил брокер вернуть сообщение продюсеру — тот узнает и сможет записать ошибку.`);
+    } else if (!hits.length){
+      done('lost'); fb.className = st.confirm ? 'aq-fb err' : 'aq-fb err';
+      fb.textContent = st.confirm ? '✓ Подтверждение пришло… а сообщения нет ни в одной очереди.' : 'Тишина. Продюсер не знает, что произошло.';
+      say('err', `Ключ <b>${st.key}</b> не подошёл ни к одной привязке — сообщение <b>пропало молча</b>.${st.confirm ? ' Обратите внимание: publisher confirm всё равно пришёл — он значит «брокер принял», а не «положил в очередь». Ловить такое помогает только mandatory.' : ''}`);
+    } else {
+      fb.className = st.confirm ? 'aq-fb ok' : 'aq-fb warn';
+      fb.textContent = st.confirm ? '✓ basic.ack: брокер принял #' + id + (st.persist ? ' и сохранил на диск' : '') + '.' : 'Отправлено «в темноту»: подтверждения не просили.';
+      say(st.confirm ? 'ok' : 'warn', `Обменник <b>${st.type}</b> по ключу <b>${st.key}</b> положил копии в: <b>${hits.map(q => q.name).join(', ')}</b>.${got ? ' Брокер сам отдал сообщение консюмеру бонусов — это push.' : (st.up && st.q.bonus.length ? ' Консюмер бонусов упёрся в prefetch — остальное ждёт в очереди.' : '')}${st.confirm ? '' : ' Без publisher confirm продюсер не узнал бы, если бы брокер не принял сообщение.'}`);
+    }
+    render(true);
+  }
+
+  function ackOne(tag, how){
+    const i = st.unacked.findIndex(m => m.tag === tag); if (i < 0) return;
+    const m = st.unacked.splice(i, 1)[0];
+    if (how === 'ack'){ frame('К→Б', 'basic.ack', 'tag=' + tag); say('ok', `#${m.id} обработано и подтверждено — брокер удалил его из очереди.`); }
+    if (how === 'requeue'){ frame('К→Б', 'basic.nack', 'tag=' + tag + ' requeue=true'); m.re = true; st.q.bonus.unshift(m); say('warn', `#${m.id} вернулось в начало очереди с пометкой redelivered. Если сообщение битое, оно будет крутиться по кругу — поэтому битые отправляют в DLQ.`); }
+    if (how === 'dlq'){ frame('К→Б', 'basic.nack', 'tag=' + tag + ' requeue=false → shop.dlx'); st.dlq.push(m); done('dlq'); say('', `#${m.id} ушло в dead-letter exchange и легло в очередь bonus.dead (DLQ). Поток не стоит, сообщение не потеряно — его разберут отдельно.`); }
+    pump(); render(false);
+  }
+
+  function render(flash){
+    $('#aq-type').innerHTML = TYPES.map(t => `<button class="aq-chip" aria-pressed="${st.type === t}" data-t="${t}">${t}</button>`).join('');
+    $('#aq-key').innerHTML = st.type === 'fanout' ? '<span class="aq-empty">fanout не смотрит на ключ — копия уйдёт во все привязанные очереди</span>'
+      : KEYS.map(k => `<button class="aq-chip" aria-pressed="${st.key === k}" data-k="${k}">${k}</button>`).join('');
+    $('#aq-flags').innerHTML = [
+      ['persist', 'сохранять на диск', 'delivery_mode=2'],
+      ['confirm', 'подтверждение от брокера', 'confirm.select'],
+      ['mandatory', 'вернуть, если некуда положить', 'mandatory']
+    ].map(([f, l, c]) => `<label><input type="checkbox" data-f="${f}" ${st[f] ? 'checked' : ''}> ${l} <code>${c}</code></label>`).join('');
+    $('#aq-exsub').innerHTML = `тип <b>${st.type}</b><br>${st.type === 'topic' ? '* — одно слово, # — сколько угодно' : st.type === 'direct' ? 'ключ должен совпасть точно' : 'ключ не важен'}`;
+    if (flash){ const ex = $('#aq-ex'); ex.classList.remove('aq-flash'); void ex.offsetWidth; ex.classList.add('aq-flash'); }
+    const chip = m => `<span class="aq-m${m.p ? ' p' : ''}${m.re ? ' re' : ''}" title="${m.p ? 'сохранено на диск' : 'только в памяти'}${m.re ? ', повторная доставка' : ''}">#${m.id}${m.p ? ' 💾' : ''}${m.re ? ' ↻' : ''}</span>`;
+    $('#aq-qs').innerHTML = QS.map(q => `<div class="aq-q${st.hit.includes(q.id) ? ' hit' : ''}">
+        <div class="aq-qh"><b>📦 ${q.name}</b><span class="aq-bind">привязка: ${q.bind[st.type]}</span></div>
+        <div class="aq-msgs">${st.q[q.id].map(chip).join('') || '<span class="aq-empty">пусто</span>'}</div></div>`).join('')
+      + `<div class="aq-q dlq"><div class="aq-qh"><b>☠ bonus.dead (DLQ)</b><span class="aq-bind">через x-dead-letter-exchange</span></div>
+        <div class="aq-msgs">${st.dlq.map(chip).join('') || '<span class="aq-empty">пусто</span>'}</div></div>`;
+    const c = $('#aq-cons');
+    c.className = 'aq-cons' + (st.up ? '' : ' down');
+    c.innerHTML = `<div class="aq-ch"><b>📥 Консюмер очереди bonus ${st.up ? '' : '— упал'}</b>
+        <span class="aq-grp"><span class="rb-lbl">prefetch:</span>${[1,3,10].map(n => `<button class="aq-chip" aria-pressed="${st.prefetch === n}" data-pf="${n}">${n}</button>`).join('')}
+        ${st.up ? '' : '<button class="act" id="aq-up">↻ Поднять</button>'}</span></div>
+      <div class="aq-unacked">${st.unacked.map(m => `<div class="aq-u">${chip(m)}<span class="aq-bind">выдано, ждёт подтверждения · tag ${m.tag}</span>
+        <button class="act okk" data-ack="${m.tag}">✓ ack</button><button class="ghost" data-rq="${m.tag}">↩ вернуть в очередь</button><button class="ghost" data-dl="${m.tag}">☠ в DLQ</button></div>`).join('')
+        || `<span class="aq-empty">${st.up ? 'Неподтверждённых нет. Брокер пришлёт сам, как только в очереди bonus что-то появится (не больше prefetch за раз).' : 'Консюмер недоступен — сообщения копятся в очереди.'}</span>`}</div>`;
+    $('#aq-frames').innerHTML = st.frames.length ? st.frames.map(f => `<div class="aq-fr">${f.dir}  <b>${esc(f.cmd)}</b> ${esc(f.rest)}</div>`).join('') : '<span class="aq-empty">пока тихо</span>';
+    $('#aq-tasks').innerHTML = '<span class="rb-lbl" style="align-self:center">Найдите сами:</span>' + TASKS.map(t => `<span class="aq-task${st.done[t.id] ? ' done' : ''}">${st.done[t.id] ? '✓ ' : ''}${t.t}</span>`).join('');
+  }
+
+  $('#aq-type').addEventListener('click', e => { const t = e.target.dataset.t; if (t){ st.type = t; st.hit = []; render(false); } });
+  $('#aq-key').addEventListener('click', e => { const k = e.target.dataset.k; if (k){ st.key = k; st.hit = []; render(false); } });
+  $('#aq-flags').addEventListener('change', e => { const f = e.target.dataset.f; if (f){ st[f] = e.target.checked; if (f === 'confirm') frame('П→Б', st.confirm ? 'confirm.select' : '(новый канал без confirm.select)'); render(false); } });
+  $('#aq-pub').addEventListener('click', publish);
+  $('#aq-cons').addEventListener('click', e => {
+    const d = e.target.dataset;
+    if (d.pf){ st.prefetch = +d.pf; frame('К→Б', 'basic.qos', 'prefetch_count=' + st.prefetch); const n = pump(); say('', `prefetch=${st.prefetch}: консюмер держит у себя не больше ${st.prefetch} неподтверждённых.${n ? ' Брокер сразу дослал ещё ' + n + '.' : ''}`); render(false); }
+    if (d.ack) ackOne(+d.ack, 'ack');
+    if (d.rq) ackOne(+d.rq, 'requeue');
+    if (d.dl) ackOne(+d.dl, 'dlq');
+    if (e.target.id === 'aq-up'){ st.up = true; frame('К→Б', 'basic.consume', 'queue=bonus'); const n = pump(); say('ok', `Консюмер вернулся и подписался снова. Брокер сразу отдал ${n} сообщ. — с пометкой redelivered у тех, что уже выдавались. Обработчик обязан быть идемпотентным: часть из них он, возможно, уже успел обработать.`); render(false); }
+  });
+  $('#aq-crash').addEventListener('click', () => {
+    if (!st.up) return;
+    const back = st.unacked.splice(0);
+    back.forEach(m => { m.re = true; });
+    st.q.bonus.unshift(...back);
+    st.up = false;
+    frame('—', 'соединение консюмера оборвалось', back.length ? 'unacked → снова в очередь' : '');
+    if (back.length) done('redeliv');
+    say(back.length ? 'warn' : '', back.length ? `Консюмер упал, не подтвердив ${back.length} сообщ. Брокер вернул их в очередь — после подъёма они придут снова. Это и есть at least once.` : 'Консюмер упал, но неподтверждённых не было — ничего не повторится. Опубликуйте сообщение и уроните консюмера до ack.');
+    render(false);
+  });
+  $('#aq-restart').addEventListener('click', () => {
+    let lost = 0;
+    const keep = arr => arr.filter(m => m.p || (lost++, false));
+    Object.keys(st.q).forEach(k => { st.q[k] = keep(st.q[k]); });
+    const back = keep(st.unacked); back.forEach(m => { m.re = true; });
+    st.unacked = []; st.q.bonus.unshift(...back); st.dlq = keep(st.dlq);
+    frame('—', 'брокер перезапущен', 'durable-очереди восстановлены');
+    if (lost) done('wiped');
+    pump();
+    say(lost ? 'err' : 'ok', lost ? `После перезапуска пропало сообщений: <b>${lost}</b> — те, что были без delivery_mode=2 (без 💾). Очереди durable восстановились, а несохранённое содержимое — нет.` : 'Перезапуск пережили все сообщения: у всех был delivery_mode=2. Снимите галочку «сохранять на диск», опубликуйте и перезапустите ещё раз.');
+    render(false);
+  });
+  $('#aq-clear').addEventListener('click', () => { const d = st.done; st = fresh(); st.done = d; $('#aq-pfb').className = 'aq-fb'; $('#aq-pfb').textContent = 'Выберите ключ и нажмите «Опубликовать».'; say('', 'Очищено. Задания, которые вы уже нашли, остаются отмеченными.'); render(false); });
+  render(false);
+})();
+
+(function(){ /* AMQP: разговор по шагам — диаграмма последовательности */
+  const S = [
+    {d:'>', cmd:'TCP :5672 · «AMQP 0 0 9 1»', t:'Приложение открывает одно TCP-соединение и первой строкой называет протокол и версию. Брокер, который не говорит на этой версии, сразу закроет соединение.'},
+    {d:'<', cmd:'connection.start', t:'Брокер: «Здравствуйте. Вот как у меня можно войти».'},
+    {d:'>', cmd:'connection.start-ok · tune-ok · open /shop', t:'Приложение: логин и пароль, размер кадра, «пульс» (heartbeat — проверка, что собеседник жив) и виртуальный хост /shop — изолированное пространство брокера.'},
+    {d:'>', cmd:'channel.open', t:'Канал — лёгкий разговор внутри соединения. Соединение дорогое, каналы дешёвые: у сервиса одно соединение и по каналу на поток работы.'},
+    {d:'>', cmd:'exchange.declare shop.events topic', t:'«Объявить» = «создай, если ещё нет». Схему маршрутов строит само приложение командами протокола.'},
+    {d:'>', cmd:'queue.declare bonus quorum', t:'Очередь, которая переживёт перезапуск и хранится на нескольких узлах.'},
+    {d:'>', cmd:'queue.bind bonus ← order.paid.*', t:'Привязка: всё из shop.events с ключом order.paid.что-угодно — в очередь bonus.'},
+    {d:'>', cmd:'confirm.select', t:'Включить подтверждения публикаций. Без этого продюсер отправляет «в темноту».'},
+    {d:'>', cmd:'basic.publish key=order.paid.moscow', t:'Сообщение уходит обменнику, а не в очередь. С ним — свойства (конверт ниже) и тело.'},
+    {d:'=', cmd:'маршрутизация по привязкам', t:'Брокер сам сверяет ключ с привязками и кладёт копию в bonus.'},
+    {d:'<', cmd:'basic.ack (confirm)', t:'«Принял и сохранил». Только теперь продюсер считает сообщение отправленным.'},
+    {d:'>', cmd:'basic.qos 20 · basic.consume bonus', t:'Консюмер (тоже приложение) подписывается: «держи у меня не больше 20 неподтверждённых».'},
+    {d:'<', cmd:'basic.deliver tag=1', t:'Брокер сам отдаёт сообщение — push. Пока нет ack, оно висит как «выдано, но не подтверждено».'},
+    {d:'>', cmd:'basic.ack tag=1', t:'Обработано — брокер удаляет сообщение. Упади консюмер до ack — сообщение получит кто-то другой: at least once.'}
+  ];
+  let i = 0, last = 0;
   function render(){
-    $$('#amqp-pipe .amqp-node').forEach(x => x.classList.toggle('on', i > 0 && S[i-1].n.includes(x.dataset.n)));
-    $('#amqp-log').innerHTML = S.slice(0, i).map((x,k) => `<div class="tlrow"${k < i - 1 ? ' style="animation:none"' : ''}><span class="tn">${k+1}</span><span class="tt"><span class="amqp-dir">${x.who}</span><span class="amqp-cmd">${esc(x.cmd)}</span>${x.t}</span></div>`).join('');
+    const rows = S.slice(0, i).map((x, k) => {
+      const cls = 'sq-row' + (k === i - 1 ? ' cur' : ' old') + (k === i - 1 && i > last ? ' new' : '');
+      const ar = x.d === '=' ? 'sq-arrow self' : x.d === '<' ? 'sq-arrow back' : 'sq-arrow';
+      return `<div class="${cls}"><span class="sq-n">${k + 1}</span><div class="sq-lane"><span class="sq-cmd" title="${esc(x.cmd)}">${esc(x.cmd)}</span><span class="${ar}"></span></div></div>`;
+    }).join('');
+    $('#amqp-seq').innerHTML = '<div class="sq-heads"><span>📤 Приложение</span><span>🐇 RabbitMQ</span></div>' + (rows || '<div class="aq-empty" style="text-align:center;padding:10px">Линии пусты — нажмите «Шаг →»</div>');
     $('#amqp-count').textContent = 'шаг ' + i + ' из ' + S.length;
     $('#amqp-prev').disabled = i === 0;
     $('#amqp-next').disabled = i === S.length;
     if (i === 0) msg($('#amqp-msg'), '', 'Нажмите «Шаг →» — приложение начнёт разговор с брокером.');
-    else if (i === S.length) msg($('#amqp-msg'), 'ok', 'Весь путь: соединение → канал → схема (обменник, очередь, привязка) → публикация с подтверждением → доставка консюмеру → ack или nack. Это и есть AMQP.');
-    else msg($('#amqp-msg'), '', 'Подсвечено, какие части модели участвуют в этом шаге.');
+    else msg($('#amqp-msg'), i === S.length ? 'ok' : '', '<b>' + esc(S[i-1].cmd) + '.</b> ' + S[i-1].t + (i === S.length ? ' Весь путь: соединение → канал → схема → публикация с подтверждением → доставка → ack.' : ''));
+    last = i;
   }
   $('#amqp-next').addEventListener('click', () => { if (i < S.length){ i++; render(); } });
   $('#amqp-prev').addEventListener('click', () => { if (i > 0){ i--; render(); } });
-  $('#amqp-reset').addEventListener('click', () => { i = 0; render(); });
+  $('#amqp-reset').addEventListener('click', () => { i = 0; last = 0; render(); });
+  render();
+})();
+
+(function(){ /* AMQP: конверт сообщения */
+  const P = [
+    ['delivery_mode=2', 'Сохранить на диск. Без этого перезапуск брокера сотрёт сообщение даже из постоянной (durable) очереди — проверьте в песочнице кнопкой «Перезапустить брокер».'],
+    ['message_id=ev-8842', 'Уникальный номер. По нему получатель распознаёт повтор и не начисляет баллы второй раз.'],
+    ['content_type=application/json', 'Формат тела. Получатель знает, чем его читать: JSON, Avro, Protobuf.'],
+    ['correlation_id · reply_to', '«На какой запрос это ответ» и «куда прислать ответ». Так через брокер делают запрос — ответ.'],
+    ['expiration=20000', 'Срок жизни в миллисекундах. Предложение курьеру на 20 секунд не доставят через минуту — оно уйдёт в DLQ или исчезнет.'],
+    ['priority=9', 'Приоритет 0–9. Работает только в priority-очереди: срочное обгоняет обычное.'],
+    ['headers: traceparent', 'Любые свои пары «ключ — значение». traceparent связывает сообщение с трассировкой запроса; по заголовкам маршрутизирует обменник headers.']
+  ];
+  let cur = -1;
+  function render(){
+    $('#env-props').innerHTML = P.map((x, k) => `<button class="aq-chip" aria-pressed="${cur === k}" data-e="${k}">${esc(x[0])}</button>`).join('');
+    if (cur >= 0) msg($('#env-msg'), '', '<b>' + esc(P[cur][0]) + '</b> — ' + P[cur][1]);
+  }
+  $('#env-props').addEventListener('click', e => { const k = e.target.dataset.e; if (k !== undefined){ cur = +k; render(); } });
+  render();
+})();
+
+(function(){ /* протоколы под микроскопом */
+  const B = '{"order_id":"ord-127453","amount":499000}';
+  const P = {
+    amqp: {name:'AMQP 0-9-1', col:'var(--rmq)', one:'Родной язык RabbitMQ: обменники, привязки, очереди, подтверждения.',
+      card:[['Откуда','2006–2008, банк JPMorgan и консорциум: открытый стандарт вместо закрытых банковских систем'],['Вид','Двоичный, сообщение едет тремя кадрами: команда, свойства, тело'],['Порт','5672, с TLS — 5671'],['Модель','Обменник → привязка → очередь. Схему объявляет само приложение'],['Гарантии','Publisher confirms + ack консюмера = at least once'],['Кто','RabbitMQ, LavinMQ, клиенты на всех языках']],
+      vars:null,
+      steps:() => [
+        ['>','TCP :5672 · «AMQP 0 0 9 1»','Открыть соединение и назвать протокол.'],
+        ['<','connection.start','Брокер: «вот как у меня входят».'],
+        ['>','start-ok · tune-ok · open /shop','Вход, размер кадра, heartbeat, виртуальный хост.'],
+        ['>','channel.open','Лёгкий канал внутри соединения.'],
+        ['>','basic.publish → shop.events','Сообщение — обменнику с ключом, тремя кадрами.'],
+        ['<','basic.ack (confirm)','«Принял и сохранил».'],
+        ['<','basic.deliver → консюмеру','Брокер сам отдаёт сообщение подписчику — push.'],
+        ['>','basic.ack tag=1','Консюмер подтвердил — сообщение удалено.']],
+      wire:[['sep','Кадр 1 · команда'],['h','01','тип кадра: команда (method)'],['h','00 01','канал 1'],['h','00 00 00 25','размер: 37 байт'],['h','00 3C 00 28','basic.publish: класс 60, метод 40'],['m','shop.events','обменник'],['m','order.paid.moscow','ключ маршрутизации'],['h','00','флаги mandatory / immediate'],['h','CE','конец кадра'],
+        ['sep','Кадр 2 · свойства'],['h','02 · 00 01 · 00 00 00 20','тип «заголовок», канал, размер'],['h','… 00 29','размер тела: 41 байт'],['m','application/json','content-type'],['m','02','delivery_mode = 2, на диск'],['h','CE','конец кадра'],
+        ['sep','Кадр 3 · тело'],['h','03 · 00 01 · 00 00 00 29','тип «тело», канал, размер 41'],['b',B,'тело сообщения, 41 байт'],['h','CE','конец кадра']],
+      over:93},
+    amqp1: {name:'AMQP 1.0', col:'var(--br)', one:'Международный стандарт обмена между брокерами разных производителей. Имя то же, протокол — другой.',
+      card:[['Откуда','2012 — стандарт OASIS, 2014 — ISO/IEC 19464'],['Вид','Двоичный, система типов как у Protobuf'],['Порт','5672, с TLS — 5671'],['Модель','Нет обменников: клиент открывает «связь» (link) к узлу по адресу — очереди или теме'],['Гарантии','Без подтверждения (settled) — at most once; с подтверждением (disposition) — at least once. Поток регулирует «кредит»'],['Кто','Azure Service Bus и Event Hubs, ActiveMQ Artemis, Solace, IBM MQ, RabbitMQ 4']],
+      vars:[['unsettled','с подтверждением'],['settled','без подтверждения']],
+      steps:v => [
+        ['>','заголовок AMQP 1.0 · SASL','Назвать протокол, войти.'],
+        ['>','open','Открыть соединение между «контейнерами».'],
+        ['>','begin','Сессия — аналог канала.'],
+        ['>','attach role=sender → /exchanges/shop.events/order.paid.moscow','Связь-отправитель к адресу. В RabbitMQ 4 адрес указывает на обменник и ключ.'],
+        ['<','flow link-credit=100','Брокер выдаёт кредит: «можешь прислать 100». Так получатель защищён от перегрузки.'],
+        ['>','transfer delivery-id=0 settled=' + (v === 'settled' ? 'true' : 'false'), v === 'settled' ? 'Отправлено «и забыто»: подтверждения не будет — at most once.' : 'Отправлено, ждём решения брокера.'],
+        ...(v === 'settled' ? [] : [['<','disposition accepted','Брокер: «принято». Это и есть подтверждение — at least once.']]),
+        ['>','attach role=receiver ← /queues/bonus','Получатель открывает свою связь к очереди.'],
+        ['>','flow link-credit=10','Получатель сам разрешает прислать не больше 10.'],
+        ['<','transfer','Брокер отдаёт сообщение в пределах кредита.'],
+        ['>','disposition accepted','Получатель подтверждает обработку.']],
+      wire:[['h','00 00 00 6F','размер кадра ≈ 111 байт'],['h','02 00 00 00','смещение, тип «AMQP», канал 0'],['h','transfer(handle 0, delivery-id 0, settled false)','команда передачи'],['sep','сообщение'],['m','header: durable=true','на диск'],['m','properties: message-id, to, content-type','свойства'],['m','application-properties: traceparent','свои заголовки'],['b',B,'секция data — тело, 41 байт']],
+      over:70, approx:true},
+    mqtt: {name:'MQTT', col:'var(--ok)', one:'Лёгкий протокол для датчиков, телефонов и плохой связи. Служебная часть — от 2 байт.',
+      card:[['Откуда','1999, IBM: следить за нефтепроводом через спутник, где каждый байт стоит денег'],['Вид','Двоичный, заголовок от 2 байт. Версии 3.1.1 (стандарт ISO) и 5.0'],['Порт','1883, с TLS — 8883, есть поверх WebSocket'],['Модель','Топики через «/»: couriers/42/location. Маски: + — один уровень, # — всё ниже'],['Гарантии','QoS 0 — at most once, QoS 1 — at least once, QoS 2 — exactly once между клиентом и брокером'],['Фишки','Retained — последнее значение для новых подписчиков; Last Will — брокер сам сообщит, что устройство пропало'],['Кто','Mosquitto, EMQX, HiveMQ, AWS IoT, RabbitMQ (плагин)']],
+      vars:[['0','QoS 0'],['1','QoS 1'],['2','QoS 2']],
+      steps:v => [
+        ['>','CONNECT client_id=courier-42 keepalive=60 will=«offline»','Подключиться и оставить «завещание»: что разослать, если устройство пропадёт.'],
+        ['<','CONNACK','Подключение принято.'],
+        ['>','SUBSCRIBE couriers/42/orders qos=' + v,'Подписка на свой топик.'],
+        ['<','SUBACK','Подписка принята.'],
+        ['>','PUBLISH couriers/42/location qos=' + v + (v !== '0' ? ' id=7' : ''), v === '0' ? 'Отправил и забыл: потеряется — значит потеряется. Для координат раз в 3 секунды это нормально.' : 'Отправил с номером пакета — ждём ответа.'],
+        ...(v === '1' ? [['<','PUBACK id=7','Брокер: «получил». Не пришёл PUBACK — клиент повторит, возможен дубль: at least once.']] : []),
+        ...(v === '2' ? [['<','PUBREC id=7','Шаг 1 из 3: «получил, запомнил номер».'],['>','PUBREL id=7','Шаг 2: «можешь отдавать дальше».'],['<','PUBCOMP id=7','Шаг 3: «готово». Четыре пакета на сообщение — ровно один раз, но дорого.']] : []),
+        ['<','PUBLISH couriers/42/orders','Брокер сам присылает сообщения по подписке.'],
+        ['>','PINGREQ','Каждые 60 секунд: «я жив».'],
+        ['<','PINGRESP','«Вижу». Пропал пинг — брокер разошлёт Last Will «courier-42 offline».']],
+      wire:v => [['h', v === '0' ? '30' : v === '1' ? '32' : '34','тип PUBLISH + QoS ' + v + ' (4 бита типа, 4 бита флагов)'],['h', v === '0' ? '3D' : '3F','длина остатка: ' + (v === '0' ? 61 : 63) + ' байт'],['h','00 12','длина топика: 18'],['m','orders/paid/moscow','топик, 18 байт'],...(v === '0' ? [] : [['h','00 07','номер пакета 7 (только QoS 1–2)']]),['b',B,'тело, 41 байт — всё остальное']],
+      over:v => v === '0' ? 22 : 24},
+    stomp: {name:'STOMP', col:'var(--kv)', one:'Текстовый протокол: кадр читается глазами. Удобен из браузера через WebSocket.',
+      card:[['Откуда','2005: «простой текстовый протокол», чтобы клиента можно было написать за вечер'],['Вид','Текст: команда, строки «ключ:значение», пустая строка, тело и нулевой байт'],['Порт','61613; в RabbitMQ через WebSocket — 15674'],['Модель','SEND и SUBSCRIBE на «назначение»: /queue/bonus, /exchange/shop.events/order.paid'],['Гарантии','ack:auto — at most once, ack:client — at least once; receipt — подтверждение отправки'],['Кто','Браузерные приложения, Spring WebSocket, ActiveMQ, RabbitMQ (плагин Web-STOMP)']],
+      vars:[['client','ack: client'],['auto','ack: auto']],
+      steps:v => [
+        ['>','CONNECT accept-version:1.2 host:/shop','Подключение — обычным текстом.'],
+        ['<','CONNECTED version:1.2','Брокер согласился на версию 1.2.'],
+        ['>','SUBSCRIBE destination:/queue/bonus ack:' + v, v === 'auto' ? 'Подписка «подтверждать сразу при выдаче»: упал клиент — сообщение потеряно.' : 'Подписка с ручным подтверждением.'],
+        ['>','SEND destination:/exchange/shop.events/order.paid.moscow receipt:r-7','Отправка в обменник с ключом прямо из браузера.'],
+        ['<','RECEIPT receipt-id:r-7','«Получил» — потому что клиент попросил receipt.'],
+        ['<','MESSAGE subscription:0 ack:m-1','Брокер сам присылает сообщение подписчику.'],
+        ...(v === 'client' ? [['>','ACK id:m-1','Клиент подтвердил после обработки — at least once.']] : []),
+        ['>','DISCONNECT','Вежливо попрощаться.']],
+      wire:[['h','SEND','команда'],['m','destination:/exchange/shop.events/order.paid.moscow','куда: обменник и ключ'],['m','content-type:application/json','формат тела'],['m','content-length:41','длина тела'],['m','receipt:r-7','«подтверди, что получил»'],['h','(пустая строка)','конец заголовков'],['b',B,'тело, 41 байт'],['h','^@','нулевой байт — конец кадра']],
+      txt:true, over:119},
+    kafka: {name:'Kafka', col:'var(--kfk)', one:'Свой протокол «запрос — ответ»: клиент сам приходит за пачками сообщений.',
+      card:[['Откуда','2011, LinkedIn: поток событий сайта на миллионы в секунду'],['Вид','Двоичный, запрос — ответ; всё ходит пачками'],['Порт','9092'],['Модель','Журнал: продюсер пишет в партицию, консюмер сам запрашивает «дай с офсета N» (pull)'],['Гарантии','acks 0 / 1 / all, идемпотентный продюсер, транзакции'],['Кто','Apache Kafka и совместимые: Redpanda, WarpStream, Azure Event Hubs (Kafka-интерфейс). RabbitMQ на нём не говорит']],
+      vars:[['all','acks=all'],['1','acks=1'],['0','acks=0']],
+      steps:v => [
+        ['>','ApiVersions','«Какие версии запросов ты понимаешь?»'],
+        ['>','Metadata topics=order.events','«Где лежат партиции?» Брокер отвечает: p0 → broker-1, p1 → broker-2…'],
+        ['>','Produce acks=' + v + ' · пачка из 500','Продюсер шлёт пачку сразу лидеру нужной партиции.'],
+        ...(v === '0' ? [] : [['<','ProduceResponse offset=8842', v === 'all' ? 'Ответ — когда записали все синхронные реплики.' : 'Ответ — когда записал лидер. Упадёт до копирования — потеря.']]),
+        ['>','FindCoordinator · JoinGroup · SyncGroup','Консюмер вступает в группу и получает свои партиции.'],
+        ['>','Fetch p3 offset=8842','Консюмер сам приходит: «дай с офсета 8842» — pull.'],
+        ['<','FetchResponse · пачка','Брокер отдаёт пачку. Сам он консюмеру ничего не присылает.'],
+        ['>','OffsetCommit p3 = 8843','Консюмер запоминает, докуда дочитал.']],
+      wire:[['sep','заголовок запроса'],['h','00 00 · 00 0B','Produce, версия 11'],['h','00 00 00 2A','номер запроса'],['m','orders-service','кто спрашивает'],['h','FF FF · 00 00 75 30','acks = -1 (all), таймаут 30 с'],['m','order.events · p3','топик и партиция'],['sep','пачка (record batch)'],['h','61 байт','заголовок пачки: офсет, CRC, сжатие, producerId, число записей'],['sep','запись'],['h','длина · смещения · время','служебные поля записи'],['m','ord-127453','ключ'],['b',B,'значение, 41 байт']],
+      over:150, batch:12}
+  };
+  const ORDER = ['amqp','amqp1','mqtt','stomp','kafka'];
+  const CLIENTS = [
+    ['mqtt','📡','Телефон курьера','MQTT :1883'],
+    ['stomp','🌐','Браузер оператора','STOMP по WebSocket :15674'],
+    ['amqp','⚙️','Сервис заказов','AMQP 0-9-1 :5672'],
+    ['amqp1','☁️','Партнёр в Azure','AMQP 1.0 :5672']];
+  let cur = 'mqtt', v = {amqp1:'unsettled', mqtt:'1', stomp:'client', kafka:'all'}, i = 0, last = 0, wsel = -1;
+  const host = $('#protocols');
+  const val = (x, f) => typeof x === 'function' ? x(v[cur]) : x;
+
+  function renderMap(){
+    $('#pm-map').innerHTML = `<div class="pm-clients">${CLIENTS.map(c => `<button class="pm-node${cur === c[0] ? ' on' : ''}" data-p="${c[0]}" style="--pc:${P[c[0]].col}"><span class="pm-ic">${c[1]}</span><span><b>${c[2]}</b><small>${c[3]}</small></span></button>`).join('')}</div>
+      <div class="pm-broker" style="--pc:${P[cur].col}"><b>🐇 RabbitMQ</b><div class="pm-plugs">${['amqp','amqp1','mqtt','stomp'].map(k => `<span class="${cur === k ? 'on' : ''}">${P[k].name}</span>`).join('')}</div><small>все протоколы → одни и те же обменники и очереди</small></div>
+      <div class="pm-clients"><button class="pm-node${cur === 'kafka' ? ' on' : ''}" data-p="kafka" style="--pc:${P.kafka.col}"><span class="pm-ic">📊</span><span><b>Сервис аналитики</b><small>протокол Kafka :9092</small></span></button>
+        <div class="pm-broker kfk"><b>🗄 Kafka</b><small>только свой протокол; в RabbitMQ так не подключиться</small></div></div>`;
+  }
+  function renderCard(){
+    const x = P[cur];
+    host.style.setProperty('--pc', x.col);
+    $('#pm-chips').innerHTML = ORDER.map(k => `<button class="pm-chip" aria-pressed="${cur === k}" data-p="${k}" style="--pc:${P[k].col}">${P[k].name}</button>`).join('');
+    $('#pm-card').innerHTML = `<h4>${x.name}</h4><p class="pm-one">${x.one}</p><dl>${x.card.map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>`;
+    $('#pm-var').innerHTML = x.vars ? '<span class="rb-lbl">вариант:</span>' + x.vars.map(o => `<button class="aq-chip" aria-pressed="${v[cur] === o[0]}" data-v="${o[0]}">${o[1]}</button>`).join('') : '<span class="rb-lbl">подробный разговор AMQP 0-9-1 — в карточке выше; здесь короткая версия</span>';
+  }
+  function renderSeq(){
+    const S = P[cur].steps(v[cur]);
+    if (i > S.length) i = S.length;
+    const rows = S.slice(0, i).map((x, k) => {
+      const cls = 'sq-row' + (k === i - 1 ? ' cur' : ' old') + (k === i - 1 && i > last ? ' new' : '');
+      return `<div class="${cls}"><span class="sq-n">${k + 1}</span><div class="sq-lane"><span class="sq-cmd" title="${esc(x[1])}">${esc(x[1])}</span><span class="sq-arrow${x[0] === '<' ? ' back' : ''}"></span></div></div>`;
+    }).join('');
+    $('#pm-seq').innerHTML = `<div class="sq-heads"><span>Клиент</span><span>${cur === 'kafka' ? 'Kafka' : 'RabbitMQ'}</span></div>` + (rows || '<div class="aq-empty" style="text-align:center;padding:10px">Нажмите «Шаг →» или «Весь разговор»</div>');
+    $('#pm-count').textContent = 'шаг ' + i + ' из ' + S.length;
+    $('#pm-prev').disabled = i === 0; $('#pm-next').disabled = i === S.length;
+    msg($('#pm-msg'), i === S.length && i ? 'ok' : '', i ? '<b>' + esc(S[i-1][1]) + '.</b> ' + S[i-1][2] + (i === S.length ? ' Пакетов в разговоре: ' + S.length + '.' : '') : P[cur].name + ': пройдите разговор по шагам. Переключите вариант — разговор изменится.');
+    last = i;
+  }
+  function renderWire(){
+    const W = val(P[cur].wire);
+    const w = $('#pm-wire');
+    w.className = 'pm-wire' + (P[cur].txt ? ' txt' : '');
+    w.innerHTML = W.map((x, k) => x[0] === 'sep' ? `<span class="pm-seg sep">${x[1]}</span>`
+      : `<button class="pm-seg ${x[0]}${wsel === k ? ' on' : ''}" data-w="${k}"><span>${esc(x[1])}</span>${P[cur].txt ? `<small>← ${x[2]}</small>` : `<small>${x[2]}</small>`}</button>`).join('');
+    const ov = val(P[cur].over);
+    msg($('#pm-wmsg'), '', wsel >= 0 && W[wsel] ? '<b>' + esc(W[wsel][1]) + '</b> — ' + W[wsel][2] : `${P[cur].name}: служебных байт на это сообщение ${P[cur].approx ? '≈ ' : ''}<b>${ov}</b> при теле 41 байт.${P[cur].batch ? ' В пачке из 500 сообщений — около ' + P[cur].batch + ' на каждое.' : ''} Нажмите на кусок, чтобы узнать, что это.`);
+  }
+  function renderBars(){
+    const rows = [['MQTT', P.mqtt.over(v.mqtt), 'mqtt'], ['AMQP 1.0', P.amqp1.over, 'amqp1', '≈'], ['AMQP 0-9-1', P.amqp.over, 'amqp'], ['STOMP', P.stomp.over, 'stomp'], ['Kafka, 1 шт.', P.kafka.over, 'kafka', '≈'], ['Kafka, в пачке', P.kafka.batch, 'kafka', '≈']];
+    const max = 150;
+    $('#pm-bars').innerHTML = rows.map(r => `<div class="pm-bar${cur === r[2] ? ' on' : ''}" style="--pc:${P[r[2]].col}"><span class="pm-lbl">${r[0]}</span><span class="pm-track"><span class="pm-fill" style="width:${Math.max(3, r[1] / max * 100)}%"></span></span><span class="pm-val">${r[3] || ''}${r[1]} Б</span></div>`).join('');
+  }
+  function all(){ renderMap(); renderCard(); renderSeq(); renderWire(); renderBars(); }
+  function pick(k){ if (!P[k] || k === cur) return; cur = k; i = 0; last = 0; wsel = -1; all(); }
+  host.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || !host.contains(b)) return;
+    if (b.dataset.p) pick(b.dataset.p);
+    else if (b.dataset.v !== undefined){ v[cur] = b.dataset.v; last = 0; wsel = -1; renderCard(); renderSeq(); renderWire(); renderBars(); }
+    else if (b.dataset.w !== undefined){ wsel = +b.dataset.w; renderWire(); }
+  });
+  host.addEventListener('mouseover', e => { const b = e.target.closest('.pm-seg[data-w]'); if (b && +b.dataset.w !== wsel){ wsel = +b.dataset.w; const W = val(P[cur].wire); msg($('#pm-wmsg'), '', '<b>' + esc(W[wsel][1]) + '</b> — ' + W[wsel][2]); $$('#pm-wire .pm-seg').forEach(x => x.classList.toggle('on', x === b)); } });
+  $('#pm-next').addEventListener('click', () => { i++; renderSeq(); });
+  $('#pm-prev').addEventListener('click', () => { if (i > 0){ i--; renderSeq(); } });
+  $('#pm-all').addEventListener('click', () => {
+    const n = P[cur].steps(v[cur]).length; i = 0; renderSeq();
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches){ i = n; renderSeq(); return; }
+    const t = setInterval(() => { i++; renderSeq(); if (i >= n) clearInterval(t); }, 550);
+  });
+  all();
+})();
+
+(function(){ /* симулятор: consumer group / share group / quorum queue / stream */
+  const ARR = ['A1','B1','C1','D1','A2','B2','C2','D2','A3','B3','C3','D3'];
+  const KC = {A:'#4356d3', B:'#c06a12', C:'#0d8e7f', D:'#7a45cf'};
+  const PART = {A:0, B:1, C:2, D:0};
+  const MODES = [
+    {id:'cg', name:'Kafka · consumer group', sub:'партиция → один воркер', order:true, reread:true, prio:false, split:'part'},
+    {id:'sg', name:'Kafka · share group', sub:'KIP-932, Kafka 4', order:false, reread:true, prio:false, split:'all'},
+    {id:'qq', name:'RabbitMQ · quorum queue', sub:'конкурирующие консюмеры', order:false, reread:false, prio:true, split:'all'},
+    {id:'st', name:'RabbitMQ · stream', sub:'журнал внутри RabbitMQ', order:true, reread:true, prio:false, split:'none'}
+  ];
+  let N = 4, slow = false, need = {order:false, reread:false, prio:false};
+  const dur = m => slow && m === 'B2' ? 5 : 1;
+
+  function run(mode){
+    const lanes = Array.from({length:N}, () => []);
+    const span = {}; let total = 0, active = 0, holds = '';
+    if (mode.split === 'none'){ /* каждый читатель получает всё */
+      for (let w = 0; w < N; w++){ let t = 0; ARR.forEach(m => { lanes[w].push({m, s:t, f:t + dur(m)}); t += dur(m); }); total = Math.max(total, t); }
+      active = N; holds = 'каждого читателя по очереди';
+    } else if (mode.split === 'part'){
+      const A = Math.min(N, 3); active = A;
+      const busy = Array(N).fill(0);
+      ARR.forEach(m => { const w = PART[m[0]] % A; const st = busy[w]; busy[w] += dur(m); lanes[w].push({m, s:st, f:busy[w]}); span[m] = [st, busy[w]]; });
+      total = Math.max(...busy);
+      const w = PART.B % A; holds = 'всю партицию p1' + (ARR.some(m => PART[m[0]] % A === w && m[0] !== 'B') ? ' и всё, что у воркера ' + (w + 1) : '');
+    } else { /* следующий свободный воркер берёт следующее сообщение */
+      const busy = Array(N).fill(0);
+      ARR.forEach(m => { let w = 0; for (let k = 1; k < N; k++) if (busy[k] < busy[w]) w = k; const st = busy[w]; busy[w] += dur(m); lanes[w].push({m, s:st, f:busy[w]}); span[m] = [st, busy[w]]; });
+      total = Math.max(...busy); active = Math.min(N, ARR.length); holds = 'только себя';
+    }
+    let bad = new Set();
+    if (mode.split !== 'none') ['A','B','C','D'].forEach(k => {
+      const ms = ARR.filter(m => m[0] === k);
+      for (let x = 1; x < ms.length; x++) if (span[ms[x]][0] < span[ms[x-1]][1]) { bad.add(ms[x]); }
+    });
+    return {lanes, total, active, holds, bad};
+  }
+
+  function render(){
+    $('#ql-n').innerHTML = [1,2,3,4,6,8].map(n => `<button class="aq-chip" aria-pressed="${N === n}" data-n="${n}">${n}</button>`).join('');
+    $('#ql-flags').innerHTML = [['slow','🐌 B2 зависло (5 тактов)',slow],['order','нужен порядок внутри заказа',need.order],['reread','нужно перечитать вчерашнее',need.reread],['prio','нужны приоритеты',need.prio]]
+      .map(([f,l,c]) => `<label><input type="checkbox" data-f="${f}" ${c ? 'checked' : ''}> ${l}</label>`).join('');
+    const fits = [];
+    $('#ql-grid').innerHTML = MODES.map(mode => {
+      const r = run(mode);
+      const why = [];
+      if (mode.split === 'none') why.push('не делит работу между воркерами');
+      if (need.order && (!mode.order || r.bad.size)) why.push('ломает порядок');
+      if (need.reread && !mode.reread) why.push('не перечитать');
+      if (need.prio && !mode.prio) why.push('нет приоритетов');
+      const fit = !why.length; if (fit) fits.push(mode.name);
+      const ord = mode.split === 'none' ? '<span class="y">✓ у каждого</span>' : r.bad.size ? `<span class="n">✗ нарушен: ${r.bad.size}</span>` : (mode.order ? '<span class="y">✓ по ключу</span>' : '<span class="w">✓ повезло</span>');
+      const lanes = r.lanes.map((L, w) => `<div class="ql-lane${L.length ? '' : ' idle'}">в${w + 1}: ${L.length ? L.map(x => `<span class="ql-m${r.bad.has(x.m) ? ' bad' : ''}${slow && x.m === 'B2' ? ' slow' : ''}" style="--kc:${KC[x.m[0]]}" title="такты ${x.s}–${x.f}">${x.m}</span>`).join('') : 'простаивает'}</div>`).join('');
+      return `<div class="ql-col ${fit ? 'fit' : 'nofit'}">
+        <div class="ql-h"><b>${mode.name}</b><span class="ql-badge">${fit ? '👍 подходит' : '✗ ' + why[0]}</span></div><small style="font:600 10.5px var(--mono);color:var(--muted)">${mode.sub}</small>
+        <div class="ql-v">
+          <div><span>работают</span><span>${r.active} из ${N}</span></div>
+          <div><span>порядок в заказе</span>${ord}</div>
+          <div><span>зависшее B2 держит</span><span class="${r.holds === 'только себя' ? 'y' : 'w'}">${slow ? r.holds : '—'}</span></div>
+          <div><span>перечитать историю</span><span class="${mode.reread ? 'y' : 'n'}">${mode.reread ? '✓' : '✗ удалено после ack'}</span></div>
+          <div><span>приоритеты</span><span class="${mode.prio ? 'y' : 'n'}">${mode.prio ? '✓' : '✗'}</span></div>
+          <div><span>готово за</span><span>${r.total} такт.</span></div>
+        </div>
+        <div class="ql-lanes">${lanes}</div>
+      </div>`;
+    }).join('');
+    const notes = [];
+    if (N > 3) notes.push(`Воркеров ${N}, а партиций 3: в consumer group ${N - 3} простаивают. Share group и quorum queue раздают сообщения всем.`);
+    if (slow) notes.push('B2 зависло: в consumer group за ним стоит вся партиция p1 — так выглядит head-of-line blocking. В share group и quorum queue подтверждение поштучное: зависло одно сообщение, остальные идут.');
+    if (!need.order && !need.reread && !need.prio && !slow && N <= 3) notes.push('Отметьте, что нужно бизнесу, или «подвесьте» B2 — выводы поменяются.');
+    notes.push(fits.length ? 'Под ваши условия подходит: <b>' + fits.join('</b>, <b>') + '</b>.' : 'Ни один вариант не закрывает всё сразу: порядок и раздача сообщений «кому угодно» противоречат друг другу — придётся выбрать, что важнее.');
+    msg($('#ql-msg'), fits.length ? '' : 'warn', notes.join(' '));
+  }
+  $('#ql-n').addEventListener('click', e => { if (e.target.dataset.n){ N = +e.target.dataset.n; render(); } });
+  $('#ql-flags').addEventListener('change', e => { const f = e.target.dataset.f; if (f === 'slow') slow = e.target.checked; else if (f) need[f] = e.target.checked; render(); });
+  render();
+})();
+
+(function(){ /* лаборатория идемпотентности */
+  const OPS = [
+    {id:'bonus', t:'Начислить 120 баллов', d:'побочный эффект: «прибавить»', ev:['OrderDelivered ev-1 · +120 баллов','OrderDelivered ev-1 · +120 баллов (повтор)'], best:['journal','unique']},
+    {id:'row', t:'Записать оплату в payments', d:'новая строка в своей базе', ev:['OrderPaid ev-2 · вставить платёж','OrderPaid ev-2 · вставить платёж (повтор)'], best:['unique']},
+    {id:'status', t:'Поставить статус «оплачен»', d:'обновить состояние', ev:['status=paid ev-3','status=paid ev-3 (повтор)'], best:['set']},
+    {id:'ooo', t:'Статусы пришли не по порядку', d:'«доставлен» раньше «оплачен»', ev:['status=delivered v3','status=paid v2 (опоздало)'], best:['version'], ooo:true},
+    {id:'bank', t:'Списать 4 990 ₽ через банк', d:'вызов чужого API', ev:['ChargeRequested ev-5 · списать','ChargeRequested ev-5 · списать (повтор)'], best:['ext']},
+    {id:'sms', t:'Отправить СМС «заказ принят»', d:'сообщение человеку', ev:['OrderPaid ev-6 · СМС','OrderPaid ev-6 · СМС (повтор)'], best:['journal','ext']}
+  ];
+  const MS = [['none','ничего не делать'],['journal','журнал event_id'],['unique','UNIQUE / UPSERT'],['set','«установить», не «прибавить»'],['version','проверка версии'],['ext','ключ идемпотентности у внешней системы']];
+  // [итог, оценка ok|mid|bad, объяснение]
+  const R = {
+    bonus:{none:['Баллов: 240 вместо 120','bad','Повтор прибавил ещё раз. Так на практике и раздают лишние баллы — тысячами, пока кто-то не сверит отчёт.'],
+      journal:['Баллов: 120 ✓','ok','ev-1 уже есть в журнале обработанных — повтор пропущен. Журнал и начисление пишем в одной транзакции.'],
+      unique:['Баллов: 120 ✓','ok','UNIQUE (order_id, kind) на таблице начислений: вторая строка не вставилась — база сама отсекла повтор.'],
+      set:['Баллов: 120 ✓','mid','Работает, если хранить «за заказ M-1 начислено 120», а не прибавлять к балансу. Но баланс всё равно придётся считать суммой — переделка модели.'],
+      version:['Баллов: 120 ✓','mid','Сработает, только если у начисления есть версия. Обычно её нет — это способ для состояний, а не для действий.'],
+      ext:['Баллов: 240','bad','Внешней системы тут нет — ключ отдавать некому. Начисление делаем у себя.']},
+    row:{none:['Строк о платеже: 2','bad','Две одинаковые оплаты в отчёте — финансисты насчитают двойную выручку.'],
+      journal:['Строк: 1 ✓','mid','Работает, но лишняя таблица: у платежа уже есть естественный ключ — order_id.'],
+      unique:['Строк: 1 ✓','ok','UPSERT / UNIQUE по order_id: самый простой способ, когда результат — строка в своей базе.'],
+      set:['Строк: 2','bad','«Установить» — про изменение существующего, а здесь вставка новой строки.'],
+      version:['Строк: 2','bad','Версия не мешает вставить вторую строку.'],
+      ext:['Строк: 2','bad','Запись идёт в нашу базу — внешний ключ ни при чём.']},
+    status:{none:['Статус: оплачен ✓','mid','Операция и так идемпотентна: «поставить оплачен» дважды — всё равно «оплачен». Иногда защищать нечего — но проверьте, нет ли побочных эффектов (пуш при смене статуса).'],
+      journal:['Статус: оплачен ✓','mid','Работает, но здесь лишнее: операция и без журнала безопасна.'],
+      unique:['Статус: оплачен ✓','mid','Ничего не вставляем — уникальность не участвует. Статус и так в порядке.'],
+      set:['Статус: оплачен ✓','ok','Правильно: «установить значение» безопасно повторять. Это лучший вид идемпотентности — ничего хранить не нужно.'],
+      version:['Статус: оплачен ✓','ok','Тоже работает и заодно спасёт от опоздавших статусов. Нужна версия в событии.'],
+      ext:['Статус: оплачен ✓','mid','Внешней системы нет — но операция безопасна сама по себе.']},
+    ooo:{none:['Статус: оплачен ✗ (был доставлен)','bad','Опоздавшее событие откатило заказ назад. Клиент видит «оплачен» после «доставлен».'],
+      journal:['Статус: оплачен ✗','bad','Это не повтор: у событий разные id, оба «новые». Журнал не поможет.'],
+      unique:['Статус: оплачен ✗','bad','Уникальность ловит дубли, а здесь два разных события.'],
+      set:['Статус: оплачен ✗','bad','«Установить» как раз и записало старый статус поверх нового.'],
+      version:['Статус: доставлен ✓','ok','Применяем, только если версия новее текущей: v2 < v3 — опоздавшее событие пропущено.'],
+      ext:['Статус: оплачен ✗','bad','Внешняя система ни при чём — проблема в порядке.']},
+    bank:{none:['Списано: 9 980 ₽','bad','Деньги списаны дважды. Возврат, жалоба, а иногда и проверка регулятора.'],
+      journal:['Списано: 4 990 ₽, но…','mid','Почти: если сервис упадёт между ответом банка и записью в журнал, повтор спишет ещё раз. Журнал защищает свою базу, а не чужую.'],
+      unique:['Списано: 9 980 ₽','bad','Уникальность в нашей базе не остановит банк — списание происходит у него.'],
+      set:['Списано: 9 980 ₽','bad','«Списать» — действие, его не превратить в «установить».'],
+      version:['Списано: 9 980 ₽','bad','Версия не помогает: банк не знает о ней.'],
+      ext:['Списано: 4 990 ₽ ✓','ok','Передаём банку ключ идемпотентности (например, заголовок Idempotence-Key = ev-5). Повтор с тем же ключом банк не исполнит, а вернёт прошлый ответ. Спросите в постановке, поддерживает ли это API банка.']},
+    sms:{none:['Отправлено СМС: 2','bad','Клиент получил два одинаковых сообщения — мелочь, но за каждое платим.'],
+      journal:['Отправлено СМС: 1 ✓','ok','Журнал отправленных event_id. Дыра «упали между отправкой и записью» остаётся, но её цена — одно лишнее СМС, и это обычно приемлемо.'],
+      unique:['Отправлено СМС: 1 ✓','mid','Сработает, если сначала вставить строку «СМС по ev-6», а потом отправить. По сути тот же журнал.'],
+      set:['Отправлено СМС: 2','bad','Отправка — действие, «установить» тут нечего.'],
+      version:['Отправлено СМС: 2','bad','Версия не про повторы одного события.'],
+      ext:['Отправлено СМС: 1 ✓','ok','Если СМС-шлюз принимает ключ идемпотентности — лучший вариант: дубль отсекает сам шлюз.']}
+  };
+  let op = 'bonus', m = 'none', ran = false;
+  const solved = new Set();
+  function render(){
+    $('#idl-ops').innerHTML = OPS.map(o => `<button class="id-op${solved.has(o.id) ? ' solved' : ''}" aria-pressed="${op === o.id}" data-o="${o.id}"><b>${o.t}</b><small>${o.d}</small></button>`).join('');
+    $('#idl-ms').innerHTML = MS.map(x => `<button class="aq-chip" aria-pressed="${m === x[0]}" data-m="${x[0]}">${x[1]}</button>`).join('');
+    $('#idl-score').textContent = 'Найдено лучших способов: ' + solved.size + ' из ' + OPS.length;
+    const O = OPS.find(o => o.id === op), r = R[op][m];
+    $('#idl-stage').innerHTML = `<div class="id-box"><div class="pr-lt">📨 Брокер доставил</div><div class="id-msgs"><div class="id-m">${O.ev[0]}</div>${ran ? `<div class="id-m dup">${O.ev[1]}</div>` : '<div class="id-m" style="opacity:.4">…</div>'}</div></div>
+      <div class="id-arrow">→</div>
+      <div class="id-box"><div class="pr-lt">🛡 Обработчик</div><div style="font-weight:600">${MS.find(x => x[0] === m)[1]}</div></div>
+      <div class="id-arrow">→</div>
+      <div class="id-box ${ran ? r[1] : ''}"><div class="pr-lt">💾 Итог</div><div class="id-res">${ran ? r[0] : 'нажмите «Прогнать»'}</div></div>`;
+    if (ran){
+      const best = O.best.includes(m);
+      msg($('#idl-msg'), r[1] === 'ok' ? 'ok' : r[1] === 'mid' ? 'warn' : 'err', r[2] + (best ? ' <b>Это лучший выбор для этой операции.</b>' : r[1] === 'ok' ? '' : ' Попробуйте другой способ.'));
+    } else msg($('#idl-msg'), '', O.ooo ? 'Здесь брокер доставит два разных события не в том порядке: сначала v3 «доставлен», потом опоздавшее v2 «оплачен».' : 'Брокер доставит одно и то же событие дважды — так бывает при at least once.');
+  }
+  $('#idl-ops').addEventListener('click', e => { const b = e.target.closest('[data-o]'); if (b){ op = b.dataset.o; ran = false; render(); } });
+  $('#idl-ms').addEventListener('click', e => { const x = e.target.dataset.m; if (x){ m = x; ran = false; render(); } });
+  $('#idl-run').addEventListener('click', () => { ran = true; const O = OPS.find(o => o.id === op); if (O.best.includes(m)) solved.add(op); render(); });
   render();
 })();
 
