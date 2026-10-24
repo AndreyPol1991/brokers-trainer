@@ -275,6 +275,82 @@
   .id-box.bad{border-color:var(--danger); background:var(--danger-bg)} .id-box.bad .id-res{color:var(--danger)}
   .id-box.mid{border-color:var(--warn); background:var(--warn-bg)} .id-box.mid .id-res{color:var(--warn)}
 
+  /* лаборатория совместимости схем и вкладка «Компромиссы» */
+  .cp-schema{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px}
+  @media (max-width:860px){.cp-schema{grid-template-columns:1fr}}
+  .cp-pre{margin:4px 0 0; background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:10px 12px; font:500 12px/1.6 var(--mono); white-space:pre-wrap}
+  .cp-ch{display:flex; flex-direction:column; gap:5px; margin-top:4px}
+  .cp-ch .aq-chip{border-radius:8px; text-align:left; font-family:var(--sans); font-weight:600}
+  .cp-reg{margin-top:10px; border:1.5px solid var(--line); border-radius:10px; padding:10px 12px; background:var(--surface-2); font-size:13.5px}
+  .cp-reg.ok{border-color:var(--ok); background:var(--ok-bg)} .cp-reg.no{border-color:var(--danger); background:var(--danger-bg)}
+  .cp-reg b.ok{color:var(--ok)} .cp-reg b.no{color:var(--danger)}
+  .cp-pairs{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px}
+  @media (max-width:860px){.cp-pairs{grid-template-columns:1fr 1fr}}
+  .cp-pair{border:1.5px solid var(--line); border-radius:10px; padding:9px 10px; background:var(--surface-2); font-size:12.5px; display:flex; flex-direction:column; gap:4px; opacity:.5}
+  .cp-pair.live{opacity:1}
+  .cp-pair b{font:700 12px var(--mono)}
+  .cp-pair .r{font-weight:700}
+  .cp-pair.live.ok{border-color:var(--ok); background:var(--ok-bg)} .cp-pair.live.ok .r{color:var(--ok)}
+  .cp-pair.live.no{border-color:var(--danger); background:var(--danger-bg)} .cp-pair.live.no .r{color:var(--danger)}
+  .cp-pair small{color:var(--muted)}
+  .to-wrap{display:grid; grid-template-columns:240px 1fr; gap:14px; margin-top:10px}
+  @media (max-width:860px){.to-wrap{grid-template-columns:1fr}}
+  .to-list{display:flex; flex-direction:column; gap:5px}
+  @media (max-width:860px){.to-list{flex-direction:row; flex-wrap:wrap}}
+  .to-item{appearance:none; text-align:left; font:600 13px var(--sans); color:var(--ink); border:1.5px solid var(--line); border-radius:9px; padding:7px 10px; background:var(--surface-2); cursor:pointer}
+  .to-item[aria-pressed="true"]{border-color:var(--br); background:color-mix(in srgb,var(--br) 12%,var(--surface)); color:var(--br)}
+  .to-main{min-width:0}
+  .to-q{font:700 16px var(--sans)}
+  .to-opts{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr)); gap:10px; margin-top:10px}
+  .to-opt{border:1.5px solid var(--line); border-radius:12px; padding:11px 12px; background:var(--surface-2); display:flex; flex-direction:column; gap:6px; transition:border-color .2s, background .2s, transform .2s}
+  .to-opt h4{margin:0; font-size:14.5px}
+  .to-opt .g, .to-opt .c, .to-opt .w{font-size:12.5px; line-height:1.45}
+  .to-opt .g::before{content:"＋ получаем: "; font-weight:700; color:var(--ok)}
+  .to-opt .c::before{content:"− платим: "; font-weight:700; color:var(--danger)}
+  .to-opt .w::before{content:"→ бери, когда: "; font-weight:700; color:var(--br)}
+  .to-opt.win{border-color:var(--ok); background:var(--ok-bg); transform:translateY(-2px)}
+  .to-opt.lose{opacity:.55}
+  .to-opt .tw{font:700 11px var(--mono); color:var(--ok)}
+  .to-why{margin-top:10px; border-left:3px solid var(--br); padding:6px 12px; background:var(--surface-2); border-radius:0 9px 9px 0; font-size:13.5px}
+
+  /* лаборатория CDC: WAL, слот, Debezium, outbox */
+  .cd-gloss{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+  .cd-row{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px}
+  @media (max-width:860px){.cd-row{grid-template-columns:1fr}}
+  .cd-box{border:1.5px solid var(--line); border-radius:12px; padding:11px 12px; background:var(--surface-2); display:flex; flex-direction:column; gap:8px; min-width:0}
+  .cd-btns{display:flex; flex-wrap:wrap; gap:6px}
+  .cd-btns button{padding:6px 11px; font-size:12.5px}
+  .cd-tog{display:flex; gap:7px; align-items:center; font-size:13px}
+  .cd-tbl{border:1px solid var(--line); border-radius:8px; background:var(--surface); overflow-x:auto}
+  .cd-tbl table{border-collapse:collapse; width:100%; font:500 11.5px var(--mono)}
+  .cd-tbl th,.cd-tbl td{padding:4px 7px; border-bottom:1px solid var(--line); text-align:left; white-space:nowrap}
+  .cd-tbl th{color:var(--faint); font-weight:600}
+  .cd-tbl caption{caption-side:top; text-align:left; font:700 11.5px var(--mono); padding:5px 7px; color:var(--muted)}
+  .cd-tbl tr.new td{background:var(--ok-bg)}
+  .cd-walh{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:baseline}
+  .cd-wal{display:flex; flex-wrap:wrap; gap:20px 5px; padding:8px 2px 14px; min-height:64px; align-items:flex-start}
+  .cd-e{flex:none; border:1.5px solid var(--tc); border-radius:7px; padding:4px 7px; background:color-mix(in srgb,var(--tc) 10%,var(--surface)); font:600 10.5px var(--mono); display:flex; flex-direction:column; gap:1px; position:relative; min-width:84px}
+  .cd-e small{font:500 9.5px var(--mono); color:var(--muted)}
+  .cd-e.ab{opacity:.45; border-style:dashed; text-decoration:line-through}
+  .cd-e.rd{box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 35%,transparent)}
+  .cd-e.slot::before{content:"▲ слот"; position:absolute; bottom:-17px; left:0; font:700 9.5px var(--mono); color:var(--kfk)}
+  .cd-e.open{border-style:dotted}
+  .cd-wal-empty{font-size:12px; color:var(--faint); font-style:italic; align-self:center}
+  .cd-legend{display:flex; flex-wrap:wrap; gap:12px; font-size:11.5px; color:var(--muted); margin-top:10px}
+  .cd-legend span{display:flex; align-items:center; gap:5px}
+  .cd-sw{display:inline-block; width:14px; height:10px; border-radius:3px; border:1.5px solid var(--line)}
+  .cd-sw.slot{border-color:var(--kfk); background:color-mix(in srgb,var(--kfk) 25%,transparent)}
+  .cd-sw.ab{border-style:dashed}
+  .cd-sw.rd{box-shadow:0 0 0 2px color-mix(in srgb,var(--ok) 50%,transparent)}
+  .cd-st{font:600 12px var(--mono); color:var(--muted)}
+  .cd-st b.on{color:var(--ok)} .cd-st b.off{color:var(--danger)}
+  .cd-ev{margin:0; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:9px 11px; font:500 11.5px/1.5 var(--mono); white-space:pre-wrap; word-break:break-word; max-height:260px; overflow:auto; color:var(--ink)}
+  .cd-topic{border:1px solid var(--line); border-radius:9px; padding:8px 10px; background:var(--surface)}
+  .cd-topic b{font:700 12px var(--mono)} .cd-topic small{font-size:11.5px; color:var(--muted)}
+  .cd-msgs{display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; min-height:22px}
+  .cd-k{font:600 10.5px var(--mono); border:1px solid var(--kfk); border-radius:5px; padding:2px 6px; background:color-mix(in srgb,var(--kfk) 8%,var(--surface))}
+  .cd-k.dup{border-color:var(--warn); background:var(--warn-bg)}
+
   /* протоколы под микроскопом */
   .pm-map{display:grid; grid-template-columns:1.2fr .9fr 1.2fr; gap:12px; margin-top:12px; align-items:center}
   @media (max-width:860px){.pm-map{grid-template-columns:1fr}}
@@ -1177,6 +1253,7 @@
       <button class="tab" role="tab" aria-selected="false" data-tab="capstone" style="--tabcol:var(--kfk)"><span class="dot"></span>17 · Капстоун 🏗</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="arch" style="--tabcol:var(--kfk)"><span class="dot"></span>18 · Архитектура 🏛</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="schema" style="--tabcol:var(--kv)"><span class="dot"></span>19 · Схема и валидация 📐</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="tradeoffs" style="--tabcol:var(--br)"><span class="dot"></span>20 · Компромиссы ⚖</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="gloss" style="--tabcol:var(--br)"><span class="dot"></span>Глоссарий</button>
 
     </nav>
@@ -1888,6 +1965,28 @@ Location: /api/v1/orders/127453
 </section>
 
 <!-- ==================== ГЛОССАРИЙ ==================== -->
+<section class="panel" id="tradeoffs" data-accent="br" role="tabpanel">
+  <p class="lead">Почти каждое решение в брокерах — это <b>компромисс</b>: что-то получаем, чем-то платим. Здесь собраны главные развилки в одном месте. Выберите развилку, потом ситуацию — увидите, какой вариант выигрывает и почему.</p>
+  <div class="card">
+    <h2><span class="tag">ВЕСЫ</span> что получаем и чем платим — по каждой развилке</h2>
+    <div class="to-wrap">
+      <div class="to-list" id="to-list"></div>
+      <div class="to-main">
+        <div class="to-q" id="to-q"></div>
+        <div class="to-opts" id="to-opts"></div>
+        <div class="to-why" id="to-why"></div>
+        <div class="pm-sub" style="margin-top:14px">Ситуации — нажмите и посмотрите, кто выиграл</div>
+        <div class="aq-chips" id="to-sits" style="margin-top:8px"></div>
+        <div class="console" id="to-msg">Выберите ситуацию.</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2><span class="tag">ШПАРГАЛКА</span> все развилки одной таблицей</h2>
+    <div class="table-wrap"><table class="db" id="to-table"></table></div>
+  </div>
+</section>
+
 <section class="panel" id="gloss" data-accent="br" role="tabpanel">
   <p class="lead">Все термины лекции в одном месте. Ищи по русскому названию, английскому или по смыслу.</p>
   <div class="card">
@@ -3368,6 +3467,61 @@ COMMIT
     <div class="note"><b>Суть паттерна:</b> событие пишется в таблицу outbox в той же транзакции БД, что и бизнес-данные. Отдельный процесс (relay) перекладывает события из outbox в брокер — с повторами, пока не получится. Атомарность без распределённых транзакций.</div>
   </div>
 
+  <div class="card" id="cdc-lab">
+    <h2><span class="tag">ВНУТРИ</span> WAL, слот, Debezium, outbox: как изменение в базе становится событием в Kafka</h2>
+    <p><b>CDC</b> (Change Data Capture, «захват изменений») — способ узнавать об изменениях в базе, не трогая код приложения: специальная программа читает <b>журнал базы</b>, куда база и так записывает каждое изменение. Самая известная такая программа — <b>Debezium</b>. Ниже вся цепочка вживую — жмите кнопки слева направо.</p>
+    <div class="cd-gloss" id="cd-gloss"></div>
+    <div class="console" id="cd-gmsg">Нажмите на слово — объясню. Начните с WAL.</div>
+
+    <div class="cd-row">
+      <div class="cd-box">
+        <div class="pr-lt">📱 Приложение (сервис заказов)</div>
+        <label class="cd-tog"><input type="checkbox" id="cd-ob" checked> писать событие в <b>outbox</b> в той же транзакции</label>
+        <div class="cd-btns">
+          <button class="act" data-a="create">🛒 Оформить заказ</button>
+          <button class="ghost" data-a="amount">✏️ Изменить сумму</button>
+          <button class="ghost" data-a="cancel">✖ Отменить заказ</button>
+          <button class="act danger" data-a="abort">💥 Упасть до COMMIT</button>
+        </div>
+      </div>
+      <div class="cd-box">
+        <div class="pr-lt">🗄 PostgreSQL · таблицы</div>
+        <div class="cd-tbl" id="cd-orders"></div>
+        <div class="cd-tbl" id="cd-outbox"></div>
+      </div>
+    </div>
+
+    <div class="cd-box" style="margin-top:10px">
+      <div class="cd-walh"><span class="pr-lt" style="margin:0">📜 WAL — журнал предзаписи (то, что видит Debezium)</span><span class="rb-lbl" id="cd-walsz"></span></div>
+      <div class="cd-wal" id="cd-wal"></div>
+      <div class="cd-legend"><span><i class="cd-sw slot"></i> слот debezium: «дочитано до сюда»</span><span><i class="cd-sw ab"></i> откат — транзакции не было</span><span><i class="cd-sw rd"></i> только что прочитано</span></div>
+    </div>
+
+    <div class="cd-row">
+      <div class="cd-box">
+        <div class="pr-lt">🔌 Debezium (в Kafka Connect)</div>
+        <div class="cd-st" id="cd-dbz"></div>
+        <label class="cd-tog"><input type="checkbox" id="cd-raw" checked> захватывать таблицу <b>orders</b> целиком (сырой CDC)</label>
+        <label class="cd-tog"><input type="checkbox" id="cd-obr" checked> захватывать <b>outbox</b> и превращать в бизнес-события</label>
+        <div class="cd-btns">
+          <button class="act" data-a="read">📖 Прочитать WAL</button>
+          <button class="ghost" data-a="stop" id="cd-stopbtn">⏸ Остановить</button>
+          <button class="act danger" data-a="crash">💥 Упасть после отправки</button>
+          <button class="ghost" data-a="vacuum">🧹 Очистить WAL</button>
+        </div>
+        <pre class="cd-ev" id="cd-ev">— событие появится после чтения —</pre>
+      </div>
+      <div class="cd-box">
+        <div class="pr-lt">🗂 Kafka · топики</div>
+        <div class="cd-topic"><b>pg.public.orders</b> <small>сырой CDC: строка таблицы как есть</small><div class="cd-msgs" id="cd-t1"></div></div>
+        <div class="cd-topic"><b>order.events</b> <small>outbox: бизнес-события, ключ — номер заказа</small><div class="cd-msgs" id="cd-t2"></div></div>
+      </div>
+    </div>
+    <div class="console" id="cd-msg">Оформите заказ — посмотрите, что появилось в WAL. Потом «Прочитать WAL».</div>
+    <div class="aq-tasks" id="cd-tasks"></div>
+    <div class="note"><b>Сырой CDC или outbox?</b> Сырой CDC отдаёт наружу строку таблицы как есть: переименовали колонку — сломали всех читателей, а событие «заказ отменён» приходится угадывать по полю status. Outbox отдаёт событие, которое вы сами сформулировали: <code class="inl">OrderCancelled</code> с нужными полями. CDC здесь — только транспорт из outbox в Kafka, без опросов базы.</div>
+  </div>
+
   <div class="card when-card">
     <h2><span class="tag">КОГДА ЧТО</span> прямая отправка, outbox с опросом или outbox через CDC</h2>
     <div class="table-wrap"><table class="db">
@@ -3433,10 +3587,25 @@ COMMIT
     <div class="note"><b>Правило, которое стоит запомнить:</b> безопасно — <b>добавлять необязательное</b> (с умолчанием) и <b>удалять то, у чего было умолчание</b>. Опасно — <b>переименовывать, менять тип, убирать обязательное</b>. Переименование делают в два шага: добавили новое → все переехали → удалили старое. Полный маршрут с кодом — на вкладке «12 · Кодом», сценарий «Schema Registry».</div>
   </div>
 
-  <div class="card when-card">
-    <h2><span class="tag">КОГДА ЧТО</span> BACKWARD, FORWARD или FULL — какой режим совместимости</h2>
-    <p>Режим решает, <b>кого можно обновлять первым</b>: читателей или того, кто пишет.</p>
-    <div class="table-wrap"><table class="db">
+  <div class="card" id="compat">
+    <h2><span class="tag">ЛАБОРАТОРИЯ</span> BACKWARD, FORWARD, FULL: поменяйте схему и выкатите сами</h2>
+    <p>Схема — договор о форме сообщения. Её меняет продюсер, а читают десятки консюмеров, которые обновляются не одновременно. <b>Режим совместимости</b> — правило, которое реестр схем проверяет до выкатки. По сути он отвечает на один вопрос: <b>кого можно обновлять первым</b> — читателей или того, кто пишет.</p>
+    <div class="cp-schema">
+      <div><div class="pr-lt">Схема v1 — сейчас в проде</div><pre class="cp-pre">order_id  string   обязательное
+amount    int      обязательное
+comment   string   необязательное, по умолчанию null</pre></div>
+      <div><div class="pr-lt">Что меняем в v2</div><div class="cp-ch" id="cp-ch"></div></div>
+    </div>
+    <div class="aq-grp" style="margin-top:12px"><span class="rb-lbl">режим реестра:</span><span class="aq-chips" id="cp-mode"></span></div>
+    <div class="cp-reg" id="cp-reg"></div>
+    <div class="aq-grp" style="margin-top:12px"><span class="rb-lbl">порядок выкатки:</span><span class="aq-chips" id="cp-order"></span>
+      <label class="cd-tog"><input type="checkbox" id="cp-old" checked> в топике остались старые сообщения (Kafka хранит историю)</label></div>
+    <div class="cp-pairs" id="cp-pairs"></div>
+    <div class="console" id="cp-msg"></div>
+    <div class="note"><b>Как запомнить.</b> BACKWARD — «новый читатель понимает <b>старое</b>» → сначала обновляем читателей. FORWARD — «старый читатель понимает <b>новое</b>» → сначала продюсер. FULL — и то и другое → порядок не важен. Для Kafka, где история лежит в топике, на практике чаще всего берут BACKWARD или FULL.</div>
+    <div class="note good"><b>Какие изменения безопасны:</b> добавить необязательное поле со значением по умолчанию — да. Удалить необязательное поле — да в BACKWARD. Переименовать или поменять тип — нет: добавьте новое поле, переведите читателей, потом удалите старое.</div>
+    <details class="ql-more"><summary>Сводная таблица режимов</summary>
+<div class="table-wrap"><table class="db">
         <thead><tr><th>Ситуация</th><th>Режим</th><th>Что гарантирует</th><th>Порядок выкатки</th></tr></thead>
         <tbody>
           <tr><td>Обычный случай: читатели обновляются по-разному, писатель один</td><td><b>BACKWARD</b> (по умолчанию в Confluent)</td><td>Новая схема читает старые сообщения</td><td>Сначала консюмеры, потом продюсер</td></tr>
@@ -3446,7 +3615,7 @@ COMMIT
           <tr><td>Прототип, схема меняется каждый день</td><td><b>NONE</b> — только на тестовом стенде</td><td>Проверок нет</td><td>В проде так нельзя</td></tr>
         </tbody>
     </table></div>
-    <div class="note good"><b>Какие изменения безопасны:</b> добавить необязательное поле со значением по умолчанию — да. Удалить необязательное поле — да в BACKWARD. Переименовать или поменять тип — нет: добавьте новое поле, переведите читателей, потом удалите старое.</div>
+    </details>
   </div>
 
   <div class="card">
@@ -4435,6 +4604,273 @@ renderNum('kfk-flow', [
   $('#idl-ops').addEventListener('click', e => { const b = e.target.closest('[data-o]'); if (b){ op = b.dataset.o; ran = false; render(); } });
   $('#idl-ms').addEventListener('click', e => { const x = e.target.dataset.m; if (x){ m = x; ran = false; render(); } });
   $('#idl-run').addEventListener('click', () => { ran = true; const O = OPS.find(o => o.id === op); if (O.best.includes(m)) solved.add(op); render(); });
+  render();
+})();
+
+(function(){ /* лаборатория CDC: транзакция → WAL → слот → Debezium → Kafka */
+  const TC = ['#4356d3','#0d8e7f','#c06a12','#7a45cf','#c62f27','#1c8a4a'];
+  const GL = [
+    ['WAL', 'Write-Ahead Log, журнал предзаписи. Прежде чем поменять данные в таблице, PostgreSQL дописывает изменение в конец этого журнала. Упал сервер — при старте база проиграет журнал и восстановит всё, что было закоммичено. Журнал только дописывается — поэтому его удобно читать по порядку.'],
+    ['LSN', 'Log Sequence Number — адрес записи в WAL, вида 0/16B3A48. Растёт всегда. По LSN читатель помнит, докуда дочитал.'],
+    ['слот репликации', 'Закладка в базе: «вот этот читатель дочитал до такого LSN». Пока слот не сдвинулся, база не удаляет WAL после него — иначе читатель пропустил бы изменения. Обратная сторона: остановленный Debezium держит WAL, и диск базы растёт.'],
+    ['logical decoding', 'Режим, в котором PostgreSQL отдаёт из WAL не байты страниц, а понятные изменения: «в orders вставлена строка такая-то». Отдаёт только закоммиченные транзакции и в порядке коммита. Включается wal_level=logical.'],
+    ['Debezium', 'Программа CDC. Подключается к базе как реплика, читает изменения через слот, превращает каждое в сообщение и пишет в Kafka. Работает внутри Kafka Connect. Код приложения не меняется.'],
+    ['Kafka Connect', 'Сервер для коннекторов: «из базы в Kafka» (source) и «из Kafka в базу/поиск» (sink). Хранит позицию каждого коннектора в служебном топике — после перезапуска Debezium продолжает с неё.'],
+    ['outbox', 'Таблица «исходящие» в базе сервиса. Событие пишется в неё в той же транзакции, что и сам заказ: либо есть оба, либо ни одного. Строку outbox можно удалить сразу — в WAL она уже попала, Debezium её прочитает.'],
+    ['Outbox Event Router', 'Преобразование в Debezium: берёт строку outbox и делает из неё нормальное бизнес-событие — тело из payload, ключ из aggregate_id, топик из aggregate_type. Наружу не утекает структура таблицы.']
+  ];
+  const TASKS = [['abort','Откат: Debezium не увидел транзакцию'],['grow','Остановили Debezium — WAL растёт'],['dup','Дубль после падения Debezium'],['vac','Очистили WAL до слота'],['ob','Бизнес-событие из outbox']];
+  let st;
+  const fresh = () => ({lsn:0x16B3A00, xid:740, wal:[], orders:[], outbox:[], obId:0, ord:0, pos:0, committed:0, up:true, crashNext:false, t1:[], t2:[], sent:{}, last:'', newRow:null, done:{}, readIds:[]});
+  st = fresh();
+  const hex = n => '0/' + n.toString(16).toUpperCase();
+  const say = (k, t) => msg($('#cd-msg'), k, t);
+  const add = (xid, kind, tbl, row, extra) => { const e = Object.assign({lsn:st.lsn, xid, kind, tbl, row: row ? Object.assign({}, row) : null}, extra || {}); st.lsn += kind === 'BEGIN' || kind === 'COMMIT' || kind === 'ABORT' ? 0x18 : 0x48; st.wal.push(e); return e; };
+
+  function tx(action){
+    const ob = $('#cd-ob').checked, xid = ++st.xid;
+    if (action !== 'create' && !st.orders.length){ say('warn', 'Сначала оформите заказ.'); return; }
+    add(xid, 'BEGIN');
+    let row, prev, type;
+    if (action === 'create' || action === 'abort'){
+      row = {id: 'ord-' + (127450 + (++st.ord)), amount: 4990, status: 'new'}; type = 'OrderCreated';
+      add(xid, 'INSERT', 'orders', row);
+    } else {
+      prev = st.orders[st.orders.length - 1];
+      row = Object.assign({}, prev, action === 'amount' ? {amount: prev.amount + 1000} : {status: 'cancelled'});
+      type = action === 'amount' ? 'OrderAmountChanged' : 'OrderCancelled';
+      add(xid, 'UPDATE', 'orders', row, {before: Object.assign({}, prev)});
+    }
+    let obRow = null;
+    if (ob){ obRow = {id: ++st.obId, aggregate_type: 'order', aggregate_id: row.id, type, payload: action === 'cancel' ? `{"order_id":"${row.id}","reason":"client"}` : `{"order_id":"${row.id}","amount":${row.amount}}`}; add(xid, 'INSERT', 'outbox', obRow); }
+    if (action === 'abort'){
+      add(xid, 'ABORT');
+      st.wal.filter(e => e.xid === xid).forEach(e => { e.ab = true; });
+      st.done.abort = true;
+      say('err', `Транзакция ${xid} упала до COMMIT. Записи в WAL есть, но помечены как несостоявшиеся: в таблицах их нет, и Debezium их <b>не увидит</b> — logical decoding отдаёт только закоммиченное. Ни заказа, ни события — ровно как и должно быть.`);
+    } else {
+      add(xid, 'COMMIT');
+      if (action === 'create') st.orders.push(row); else st.orders[st.orders.length - 1] = row;
+      if (obRow) st.outbox.push(obRow);
+      st.newRow = row.id;
+      say('', `Транзакция ${xid}: ${action === 'create' ? 'вставили заказ' : 'обновили заказ'}${ob ? ' и строку в outbox' : ''}, COMMIT. В WAL — ${ob ? '4' : '3'} записи одной транзакции. ${st.up ? 'Debezium ещё не читал — нажмите «Прочитать WAL».' : 'Debezium остановлен: слот держит WAL, журнал копится.'}`);
+      if (!st.up && st.wal.filter(e => e.lsn >= st.committed).length > 8) st.done.grow = true;
+    }
+    render();
+  }
+
+  function decode(e){
+    if (e.tbl === 'orders') return {topic: 1, key: e.row.id, text: JSON.stringify({before: e.before || null, after: e.row, op: e.kind === 'INSERT' ? 'c' : 'u', source: {db:'shop', table:'orders', lsn: hex(e.lsn), txId: e.xid}}, null, 2)};
+    return {topic: 2, key: e.row.aggregate_id, text: '// Outbox Event Router: строка outbox → бизнес-событие\nkey:     ' + e.row.aggregate_id + '\nheaders: id=' + e.row.id + ', type=' + e.row.type + '\nvalue:   ' + e.row.payload};
+  }
+
+  function read(){
+    if (!st.up){ say('warn', 'Debezium остановлен. Запустите его снова кнопкой «▶ Запустить».'); return; }
+    let i = st.wal.findIndex(e => e.lsn >= st.pos && e.kind === 'BEGIN' && !e.ab);
+    // пропустить откаченные транзакции целиком
+    const pending = st.wal.filter(e => e.lsn >= st.pos);
+    const abortedSkipped = [...new Set(pending.filter(e => e.ab).map(e => e.xid))];
+    if (i < 0){ st.pos = st.lsn; st.committed = st.lsn; say('', abortedSkipped.length ? `Новых закоммиченных транзакций нет. Откаченную транзакцию ${abortedSkipped.join(', ')} Debezium пропустил — её как будто не было.` : 'Нового в WAL нет: Debezium дочитал до конца и ждёт.'); st.readIds = []; render(); return; }
+    const xid = st.wal[i].xid, entries = st.wal.filter(e => e.xid === xid);
+    const raw = $('#cd-raw').checked, obr = $('#cd-obr').checked;
+    const out = [];
+    entries.forEach(e => {
+      if (e.kind !== 'INSERT' && e.kind !== 'UPDATE') return;
+      if (e.tbl === 'orders' && !raw) return;
+      if (e.tbl === 'outbox' && !obr) return;
+      out.push(decode(e));
+    });
+    out.forEach(d => {
+      const key = d.topic + ':' + xid + ':' + d.key;
+      const dup = !!st.sent[key]; st.sent[key] = true;
+      (d.topic === 1 ? st.t1 : st.t2).push({off: (d.topic === 1 ? st.t1 : st.t2).length, key: d.key, dup});
+      if (dup) st.done.dup = true;
+      if (d.topic === 2) st.done.ob = true;
+    });
+    st.readIds = entries.map(e => e.lsn);
+    const end = entries[entries.length - 1].lsn + 0x18;
+    st.last = out.length ? out.map(d => d.text).join('\n\n') : '// в этой транзакции нет таблиц, которые захватывает коннектор';
+    if (st.crashNext){
+      st.crashNext = false; st.pos = st.committed;
+      say('err', `Debezium отправил ${out.length} событ. в Kafka и <b>упал, не успев сохранить позицию</b>. Слот и сохранённый офсет остались на ${hex(st.committed)}. После перезапуска он прочитает транзакцию ${xid} снова — в Kafka будет дубль. Это at least once: потребители обязаны быть идемпотентными.`);
+    } else {
+      st.pos = end; st.committed = end;
+      const dups = st.t1.concat(st.t2).filter(m => m.dup).length;
+      say(out.some(d => d.topic === 2) ? 'ok' : '', `Debezium прочитал транзакцию ${xid} из WAL через слот, отправил ${out.length} событ. в Kafka и сохранил позицию ${hex(end)} — слот сдвинулся, базе можно чистить WAL до этого места.${dups ? ' Жёлтые сообщения в Kafka — дубли после падения.' : ''}`);
+    }
+    render();
+  }
+
+  function render(){
+    $('#cd-gloss').innerHTML = GL.map((g, k) => `<button class="aq-chip" data-g="${k}">${g[0]}</button>`).join('');
+    const tbl = (name, cols, rows, keyf) => `<table><caption>${name}</caption><tr>${cols.map(x => `<th>${x}</th>`).join('')}</tr>${rows.length ? rows.map(r => `<tr class="${keyf(r) === st.newRow ? 'new' : ''}">${cols.map(x => `<td>${esc(String(r[x]))}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${cols.length}" style="color:var(--faint)">пусто</td></tr>`}</table>`;
+    $('#cd-orders').innerHTML = tbl('orders', ['id','amount','status'], st.orders, r => r.id);
+    $('#cd-outbox').innerHTML = tbl('outbox', ['id','aggregate_id','type'], st.outbox, r => r.aggregate_id);
+    const slotAt = st.wal.find(e => e.lsn >= st.committed);
+    $('#cd-wal').innerHTML = st.wal.length ? st.wal.map(e => `<div class="cd-e${e.ab ? ' ab' : ''}${st.readIds.includes(e.lsn) ? ' rd' : ''}${slotAt === e ? ' slot' : ''}" style="--tc:${TC[e.xid % TC.length]}"><span>${e.kind}${e.tbl ? ' ' + e.tbl : ''}</span><small>${hex(e.lsn)} · tx ${e.xid}</small></div>`).join('') + (slotAt ? '' : '<span class="cd-wal-empty">◂ слот в конце: всё прочитано</span>')
+      : '<span class="cd-wal-empty">WAL пуст — сделайте что-нибудь в приложении.</span>';
+    const unread = st.wal.filter(e => e.lsn >= st.committed).length;
+    $('#cd-walsz').textContent = `записей: ${st.wal.length} · держит слот: ${unread} · ≈ ${st.wal.reduce((n, e) => n + (e.kind === 'BEGIN' || e.kind === 'COMMIT' || e.kind === 'ABORT' ? 24 : 72), 0)} Б`;
+    $('#cd-dbz').innerHTML = `статус: <b class="${st.up ? 'on' : 'off'}">${st.up ? 'работает' : 'остановлен'}</b> · позиция: ${hex(st.pos)} · сохранено: ${hex(st.committed)}${st.crashNext ? ' · <b class="off">упадёт после следующей отправки</b>' : ''}`;
+    $('#cd-stopbtn').textContent = st.up ? '⏸ Остановить' : '▶ Запустить';
+    $('#cd-ev').textContent = st.last || '— событие появится после чтения —';
+    const km = m => `<span class="cd-k${m.dup ? ' dup' : ''}" title="${m.dup ? 'дубль' : ''}">#${m.off} ${esc(m.key)}${m.dup ? ' ↻' : ''}</span>`;
+    $('#cd-t1').innerHTML = st.t1.map(km).join('') || '<span class="aq-empty">пусто</span>';
+    $('#cd-t2').innerHTML = st.t2.map(km).join('') || '<span class="aq-empty">пусто</span>';
+    $('#cd-tasks').innerHTML = '<span class="rb-lbl" style="align-self:center">Найдите сами:</span>' + TASKS.map(t => `<span class="aq-task${st.done[t[0]] ? ' done' : ''}">${st.done[t[0]] ? '✓ ' : ''}${t[1]}</span>`).join('');
+  }
+
+  const host = $('#cdc-lab');
+  host.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.g !== undefined){ const g = GL[+b.dataset.g]; msg($('#cd-gmsg'), '', '<b>' + g[0] + '</b> — ' + g[1]); return; }
+    const a = b.dataset.a; if (!a) return;
+    if (['create','amount','cancel','abort'].includes(a)) tx(a);
+    if (a === 'read') read();
+    if (a === 'stop'){ st.up = !st.up; say(st.up ? 'ok' : 'warn', st.up ? 'Debezium запущен. Он продолжит с сохранённой позиции — нажмите «Прочитать WAL».' : 'Debezium остановлен. Делайте заказы: WAL копится, потому что слот не отпускает журнал. В проде это классическая авария — забытый слот съедает диск базы.'); render(); }
+    if (a === 'crash'){ st.crashNext = true; say('warn', 'Следующее чтение Debezium отправит события в Kafka и упадёт до сохранения позиции. Нажмите «Прочитать WAL», потом ещё раз.'); render(); }
+    if (a === 'vacuum'){
+      const before = st.wal.length;
+      st.wal = st.wal.filter(e => e.lsn >= st.committed);
+      const freed = before - st.wal.length;
+      if (freed) st.done.vac = true;
+      say(freed ? 'ok' : 'warn', freed ? `Удалено записей WAL: ${freed} — всё, что слот уже отпустил. Дальше слота база не чистит: эти записи Debezium ещё не прочитал.` : 'Чистить нечего: всё, что в журнале, слот ещё держит. Сначала пусть Debezium прочитает.');
+      render();
+    }
+  });
+  render();
+})();
+
+(function(){ /* лаборатория совместимости схем */
+  // b — новый читатель (v2) читает старое (v1); f — старый читатель (v1) читает новое (v2)
+  const CH = [
+    {id:'addopt', t:'Добавить currency с значением по умолчанию «RUB»', b:[1,'новый читатель не нашёл currency в старом сообщении — подставил «RUB»'], f:[1,'старый читатель увидел лишнее поле currency — просто проигнорировал']},
+    {id:'addreq', t:'Добавить обязательное currency без значения по умолчанию', b:[0,'новый читатель ждёт currency, а в старом сообщении его нет и подставить нечего'], f:[1,'старый читатель проигнорировал незнакомое поле']},
+    {id:'delopt', t:'Удалить необязательное comment', b:[1,'новый читатель про comment не знает — лишнее поле в старом сообщении игнорирует'], f:[1,'старый читатель не нашёл comment — подставил null по умолчанию']},
+    {id:'delreq', t:'Удалить обязательное amount', b:[1,'новый читатель про amount не знает — игнорирует его в старых сообщениях'], f:[0,'старый читатель ждёт amount, а в новом сообщении его нет и подставить нечего — бонусы упадут']},
+    {id:'rename', t:'Переименовать amount → total', b:[0,'новый читатель ищет total, в старом сообщении только amount'], f:[0,'старый читатель ищет amount, в новом только total']},
+    {id:'type', t:'Сменить тип amount: int → string', b:[0,'новый читатель ждёт строку, в старом сообщении число'], f:[0,'старый читатель ждёт число, а пришла строка «4990»']}
+  ];
+  const MODES = [['BACKWARD','новый читатель понимает старое'],['FORWARD','старый читатель понимает новое'],['FULL','и то и другое'],['NONE','без проверок']];
+  let ch = 'addopt', mode = 'BACKWARD', order = 'cons', oldMsgs = true;
+  const accept = c => mode === 'NONE' ? true : mode === 'BACKWARD' ? !!c.b[0] : mode === 'FORWARD' ? !!c.f[0] : !!(c.b[0] && c.f[0]);
+  function render(){
+    const c = CH.find(x => x.id === ch);
+    $('#cp-ch').innerHTML = CH.map(x => `<button class="aq-chip" aria-pressed="${ch === x.id}" data-c="${x.id}">${x.t}</button>`).join('');
+    $('#cp-mode').innerHTML = MODES.map(m => `<button class="aq-chip" aria-pressed="${mode === m[0]}" data-m="${m[0]}" title="${m[1]}">${m[0]}</button>`).join('');
+    $('#cp-order').innerHTML = [['cons','сначала консюмеры'],['prod','сначала продюсер']].map(o => `<button class="aq-chip" aria-pressed="${order === o[0]}" data-o="${o[0]}">${o[1]}</button>`).join('');
+    const ok = accept(c);
+    const reg = $('#cp-reg');
+    reg.className = 'cp-reg ' + (ok ? 'ok' : 'no');
+    reg.innerHTML = ok ? `🗂 Реестр схем, режим <b>${mode}</b>: <b class="ok">✓ схема v2 зарегистрирована</b>${mode === 'NONE' ? ' — без всяких проверок' : ''}.`
+      : `🗂 Реестр схем, режим <b>${mode}</b>: <b class="no">✗ отклонено</b> — ${mode === 'BACKWARD' ? c.b[1] : mode === 'FORWARD' ? c.f[1] : (!c.b[0] ? c.b[1] : c.f[1])}. Сборка продюсера упала у того, кто меняет схему, — до прода изменение не дошло.`;
+    // какие пары «писатель → читатель» встретятся в проде при выбранном порядке
+    const pairs = [
+      {k:'11', w:'v1', r:'v1', live:true, res:[1,'старое к старому — всегда работает']},
+      {k:'12', w:'v1', r:'v2', live: ok && (order === 'cons' || oldMsgs), res:c.b},
+      {k:'21', w:'v2', r:'v1', live: ok && order === 'prod', res:c.f},
+      {k:'22', w:'v2', r:'v2', live: ok, res:[1,'новое к новому — всегда работает']}
+    ];
+    $('#cp-pairs').innerHTML = pairs.map(x => `<div class="cp-pair${x.live ? ' live' : ''} ${x.res[0] ? 'ok' : 'no'}"><b>писатель ${x.w} → читатель ${x.r}</b><span class="r">${x.live ? (x.res[0] ? '✓ читается' : '✗ ломается') : '— не встретится'}</span><small>${x.res[1]}</small></div>`).join('');
+    const broken = pairs.filter(x => x.live && !x.res[0]);
+    let t;
+    if (!ok) t = `Реестр не пустил изменение — и это хорошо: сломалось бы у читателей. ${c.b[0] || c.f[0] ? 'Попробуйте другой режим или безопасное изменение.' : 'Такое изменение несовместимо ни в одну сторону: делайте новое поле рядом со старым, переводите читателей и только потом удаляйте старое (или новый топик).'}`;
+    else if (broken.length) t = `<b>В проде сломается:</b> ${broken.map(x => 'писатель ' + x.w + ' → читатель ' + x.r + ': ' + x.res[1]).join('; ')}. ${mode === 'NONE' ? 'Режим NONE ничего не проверил.' : `Режим ${mode} это пропустил, потому что гарантирует только ${mode === 'BACKWARD' ? '«новый понимает старое» — значит, обновлять первыми надо консюмеров' : '«старый понимает новое» — значит, первым надо выкатывать продюсера'}.`}`;
+    else t = `<b>Выкатка пройдёт без поломок.</b> ${order === 'cons' ? 'Сначала обновили консюмеров: в переходный период новые читатели читают старые сообщения — это и есть BACKWARD.' : 'Сначала выкатили продюсер: старые читатели получают новые сообщения — это FORWARD.'}${oldMsgs && order === 'prod' ? ' А потом обновлённые читатели дочитают старые сообщения из топика — нужен ещё и BACKWARD. Отсюда популярность FULL.' : ''}`;
+    msg($('#cp-msg'), !ok ? 'warn' : broken.length ? 'err' : 'ok', t);
+  }
+  $('#compat').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.c) ch = b.dataset.c; else if (b.dataset.m) mode = b.dataset.m; else if (b.dataset.o) order = b.dataset.o; else return;
+    render();
+  });
+  $('#cp-old').addEventListener('change', e => { oldMsgs = e.target.checked; render(); });
+  render();
+})();
+
+(function(){ /* вкладка «Компромиссы» */
+  const T = [
+    {id:'guar', n:'Гарантия доставки', q:'At most once, at least once или exactly once?',
+      o:[['At most once','Скорость и простоту: отправил и забыл, дублей нет','Потерей: упал консюмер или брокер — сообщения нет, и никто об этом не узнает','потеря одного сообщения не видна: клики, метрики, GPS раз в секунду'],
+         ['At least once','Надёжность: сообщение не теряется','Дублями: после сбоя сообщение придёт снова — обработчик должен быть идемпотентным','почти всегда: заказы, оплаты, уведомления, бонусы'],
+         ['Exactly once','Ни потерь, ни дублей','Скоростью и сложностью; работает только внутри Kafka («топик → топик»), до базы или банка не дотягивается','пересчёт агрегатов в Kafka Streams']],
+      why:'<b>Почему по умолчанию берут at least once.</b> Потеря — тихая и необратимая: сообщения нет, и узнать об этом нечем. Дубль — громкий и исправимый: у него есть event_id, и обработчик его отсечёт дёшево. Поэтому «не терять + отсекать повторы» почти всегда выгоднее, чем «иногда терять». А exactly once не спасает там, где он нужнее всего, — при вызове внешних систем.',
+      s:[['Метрики кликов, 100 тыс. в секунду',0,'Одна потерянная точка из миллиона не видна на графике, а надёжность стоила бы дисков и задержки.'],['Начисление бонусов',1,'Потерять начисление — жалоба клиента. Дубль отсекаем журналом event_id.'],['Списание денег через банк',1,'Exactly once Kafka до банка не дотянется. Надёжная доставка + ключ идемпотентности у банка.'],['Агрегаты «топик → топик» в Kafka Streams',2,'Здесь вся цепочка внутри Kafka — транзакция покрывает чтение и запись.']]},
+    {id:'push', n:'Push или pull', q:'Брокер сам раздаёт или консюмер сам приходит?',
+      o:[['Push (RabbitMQ)','Мгновенная доставка, брокер сам распределяет работу','Риск завалить медленного получателя — нужен prefetch','нужна быстрая реакция и раздача задач'],
+         ['Pull (Kafka)','Каждый читает в своём темпе, можно перечитать, удобно пачками','Небольшая задержка между опросами, за лагом надо следить','много читателей с разной скоростью, большой поток, нужна история']],
+      why:'<b>Главный компромисс</b> — кто управляет темпом. При push темп задаёт брокер, и медленный получатель страдает. При pull — сам получатель, зато он может отстать, и это надо мониторить.',
+      s:[['Задания курьерам, важна каждая секунда',0,'Брокер отдаёт задание сразу свободному исполнителю.'],['Аналитика пересчитывает данные за неделю',1,'Сама выбирает, откуда и в каком темпе читать.'],['Пиковая акция, получатель не должен упасть',1,'Получатель берёт столько, сколько переварит; остальное ждёт в журнале.']]},
+    {id:'exch', n:'Тип обменника', q:'Direct, fanout, topic или headers?',
+      o:[['direct','Простота: точное совпадение ключа','Негибко: новый признак — новый ключ и привязка','задача адресована конкретному обработчику'],
+         ['fanout','Каждый подписчик получает всё, ключ не нужен','Каждый получает и лишнее — фильтрует у себя','событие действительно нужно всем'],
+         ['topic','Гибкие маски по частям ключа: order.*.moscow, order.#','Надо продумать формат ключа заранее','подписчикам нужна часть потока по признакам — чаще всего'],
+         ['headers','Маршрут по нескольким атрибутам заголовков','Медленнее и сложнее отлаживать','признаки не укладываются в одну строку ключа']],
+      why:'<b>Почему чаще всего topic.</b> Он умеет всё, что direct (точный ключ — частный случай маски), и расширяется без переделки: завтра появится подписчик «только Москва» — достаточно новой привязки. Fanout берут, когда фильтровать действительно нечего.',
+      s:[['«Сгенерируй счёт» — одному генератору',0,'Точный адрес, ничего лишнего.'],['«Заказ оплачен» нужен складу, бонусам, аналитике',1,'Все получают всё — фильтровать нечего.'],['Склад Москвы хочет только московские заказы',2,'Маска order.*.moscow.'],['Маршрут по формату и приоритету документа',3,'Два атрибута сразу — заголовки.']]},
+    {id:'broker', n:'Kafka или RabbitMQ', q:'Журнал или очередь?',
+      o:[['Kafka','История, много независимых читателей, огромный поток','Сложнее эксплуатация, нет приоритетов и TTL сообщения','события для многих, перечитывание, сотни тысяч в секунду'],
+         ['RabbitMQ','Очереди задач, маршрутизация, приоритеты, TTL, проще запустить','Прочитано — удалено, перечитать нельзя; поток скромнее','задача для одного исполнителя, сложная маршрутизация, небольшая команда']],
+      why:'<b>Это не «быстрее или медленнее»,</b> а разные модели. Очередь хранит задания, пока их не выполнят. Журнал хранит факты, пока не истечёт срок. Спросите: сообщение — это задание или факт?',
+      s:[['Событие «заказ оплачен» для пяти сервисов и аналитики',0,'Факт для многих, нужна история.'],['Сборка заказа: одно задание одному сборщику, срочные вперёд',1,'Очередь задач с приоритетами.'],['Логи и клики, 300 тыс. в секунду',0,'Поток и хранение — сильная сторона журнала.']]},
+    {id:'format', n:'Формат сообщения', q:'JSON, Avro или Protobuf?',
+      o:[['JSON','Читается глазами и кем угодно, без библиотек','Больше размер, контракт не проверяется сам','внешние партнёры, вебхуки, MVP, отладка'],
+         ['Avro + реестр','Компактно, реестр проверяет совместимость до выкатки','Нужен реестр схем; без схемы сообщение не прочитать','внутренние события Kafka с многими читателями'],
+         ['Protobuf','Самые компактные сообщения, код из .proto на любом языке','Нужны сгенерированные классы, отладка сложнее','gRPC уже есть, огромный поток, разные языки']],
+      why:'<b>Компромисс — удобство против контроля.</b> JSON удобен людям, но молча ломается при переименовании поля. Avro и Protobuf требуют схем и инструментов, зато поломку ловит машина до прода.',
+      s:[['Вебхук для партнёра',0,'Партнёр прочитает без ваших библиотек.'],['Десять сервисов читают события заказа, формат меняется',1,'Реестр не пустит ломающее изменение.'],['Телеметрия с миллиона устройств',2,'Каждый байт на миллионе устройств — это деньги.']]},
+    {id:'fat', n:'Тонкое или толстое событие', q:'Только id или все нужные данные?',
+      o:[['Тонкое: только id','Маленькое событие, формат почти не меняется','Каждый подписчик идёт за деталями в сервис-источник — синхронная зависимость возвращается','деталей много и они часто меняются, подписчиков мало'],
+         ['Толстое: нужные данные','Подписчики работают, даже если источник лежит','Больше размер, формат надо беречь как контракт','подписчиков много, источник не должен быть узким местом']],
+      why:'<b>Обычно выбирают «нужные данные», но не весь объект.</b> Тонкое событие возвращает ту же синхронную связь, от которой уходили. Весь объект из базы привязывает подписчиков к полям, которые вы не обещали.',
+      s:[['Пять подписчиков «заказ оплачен» в пиковую акцию',1,'Иначе в пик все пятеро придут в сервис заказов за деталями.'],['Изменился большой профиль, нужен одному сервису',0,'Подписчик один и сам решит, когда сходить за деталями.']]},
+    {id:'order', n:'Порядок или параллельность', q:'Строгий порядок или скорость?',
+      o:[['Порядок по ключу','События одного заказа приходят по порядку','Параллельность ограничена числом партиций; горячий ключ тормозит свою партицию','статусы, балансы, всё, где «потом» зависит от «до»'],
+         ['Без порядка','Любой свободный воркер берёт любое сообщение — максимум скорости','События одного заказа могут обогнать друг друга','независимые задачи: письма, картинки, отчёты']],
+      why:'<b>Порядок нужен не везде.</b> Глобальный порядок всех событий почти никогда не нужен — нужен порядок внутри сущности (заказа, счёта). Это и даёт ключ, сохраняя параллельность между сущностями.',
+      s:[['Статусы заказа',0,'«Доставлен» не должен обогнать «оплачен».'],['Рассылка писем',1,'Письма независимы — пусть идут параллельно.']]},
+    {id:'retry', n:'Повтор на месте или retry-топики', q:'Ждать или обойти?',
+      o:[['Повтор на месте','Порядок сохраняется','Пока повторяем, партиция стоит','важен порядок, сбои короткие'],
+         ['Retry-топики','Основной поток не стоит','Сообщение на повторе теряет порядок относительно своего ключа','поток большой, внешний сервис лежит минутами, порядок не критичен'],
+         ['Сразу в DLQ','Битое не тормозит никого','Нужен разбор DLQ и алерт','ошибка постоянная: битый формат, нет поля']],
+      why:'<b>Сначала спросите, какая ошибка.</b> Временную лечит ожидание, постоянную — только человек. И отдельно: что важнее бизнесу — порядок или пропускная способность. Это вопрос к бизнесу, а не к разработчику.',
+      s:[['Шлюз СМС отвечает 503 полчаса, поток большой',1,'Не держим весь поток из-за одного шлюза.'],['Статусы заказа, сбой базы на секунды',0,'Порядок важнее, сбой короткий.'],['Пришёл JSON без обязательного поля',2,'Повторять бессмысленно.']]},
+    {id:'commit', n:'Автокоммит или ручной', q:'Кто подтверждает прочтение?',
+      o:[['Автокоммит','Просто, ничего писать не нужно','Офсет сдвигается по таймеру, даже если обработка не закончилась: упали — сообщение потеряно','метрики и логи, где потеря допустима'],
+         ['Ручной после обработки','Не теряем: подтверждаем только сделанное','Возможны повторы — нужна идемпотентность','всё, где важен каждый результат']],
+      why:'<b>Автокоммит — это незаметный at most once.</b> Выглядит удобно, но превращает надёжную доставку в «может потеряться». Для бизнес-событий почти всегда ручной коммит после обработки.',
+      s:[['Начисление бонусов',1,'Каждое начисление важно.'],['Сбор технических метрик',0,'Потеря точки допустима, код проще.']]},
+    {id:'write', n:'Прямая отправка или outbox', q:'Как не потерять событие при записи?',
+      o:[['Прямая отправка','Просто: одна строка кода','Двойная запись: база сохранила, а отправка не случилась (или наоборот)','событие не связано с записью в свою базу'],
+         ['Outbox + опрос','Атомарно с заказом, без новых компонентов','Опросы нагружают базу, задержка до секунды','поток небольшой, Kafka Connect нет'],
+         ['Outbox + CDC','Атомарно, без опросов, задержка в миллисекунды','Ещё один компонент (Debezium), слот держит WAL','поток большой, Kafka Connect уже есть']],
+      why:'<b>Двойная запись — главный источник «потерянных» событий.</b> Две системы без общей транзакции рано или поздно разойдутся. Outbox сводит всё к одной транзакции в своей базе, а доставку делает отдельным надёжным шагом.',
+      s:[['Логи приложения',0,'В базу ничего не пишем — двойной записи нет.'],['Заказ и событие о нём, небольшой поток',1,'Надёжно и без нового компонента.'],['Тысячи заказов в минуту, Kafka Connect есть',2,'Без опросов и с минимальной задержкой.']]},
+    {id:'repl', n:'Сколько копий хранить', q:'replication.factor 1, 2 или 3?',
+      o:[['1 копия','Дёшево и быстро','Упал брокер — данные недоступны или потеряны','локальная разработка, тестовый стенд'],
+         ['2 копии','Переживаем падение одного брокера','Обслуживание одного брокера = никакого запаса','некритичные данные, экономия дисков'],
+         ['3 копии','Обслуживание + ещё одно падение без потерь','Втрое больше дисков и сетевого трафика','прод, деньги, заказы']],
+      why:'<b>Три — стандарт прода</b>, потому что брокеры выключают не только аварии, но и плановые обновления. С двумя копиями во время обновления у вас нет страховки.',
+      s:[['Платежи в проде',2,'Обслуживание и авария одновременно не должны терять деньги.'],['Стенд разработчика',0,'Страховать нечего.']]}
+  ];
+  let cur = 'guar', sit = -1;
+  function render(){
+    const d = T.find(x => x.id === cur);
+    $('#to-list').innerHTML = T.map(x => `<button class="to-item" aria-pressed="${x.id === cur}" data-t="${x.id}">${x.n}</button>`).join('');
+    $('#to-q').textContent = d.q;
+    const win = sit >= 0 ? d.s[sit][1] : -1;
+    $('#to-opts').innerHTML = d.o.map((o, k) => `<div class="to-opt${win === k ? ' win' : win >= 0 ? ' lose' : ''}">${win === k ? '<span class="tw">🏆 выигрывает в этой ситуации</span>' : ''}<h4>${o[0]}</h4><div class="g">${o[1]}</div><div class="c">${o[2]}</div><div class="w">${o[3]}</div></div>`).join('');
+    $('#to-why').innerHTML = d.why;
+    $('#to-sits').innerHTML = d.s.map((x, k) => `<button class="aq-chip" aria-pressed="${sit === k}" data-s="${k}">${x[0]}</button>`).join('');
+    msg($('#to-msg'), sit >= 0 ? 'ok' : '', sit >= 0 ? `<b>${d.o[d.s[sit][1]][0]}.</b> ${d.s[sit][2]}` : 'Выберите ситуацию — подсвечу, какой вариант выигрывает.');
+  }
+  $('#tradeoffs').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.t){ cur = b.dataset.t; sit = -1; render(); }
+    else if (b.dataset.s !== undefined){ sit = +b.dataset.s; render(); }
+  });
+  $('#to-table').innerHTML = '<thead><tr><th>Развилка</th><th>Варианты</th><th>Что обычно выбирают и почему</th></tr></thead><tbody>' +
+    T.map(x => `<tr><td><b>${x.n}</b></td><td>${x.o.map(o => o[0]).join(' · ')}</td><td>${x.why}</td></tr>`).join('') + '</tbody>';
   render();
 })();
 
@@ -5825,7 +6261,7 @@ function mqHash(s){
 
 /* ================= НАПРАВЛЕННЫЙ МАРШРУТ ================= */
 (function(){
-  const CHAIN = ['basics','parts','life','models','guar','kafka','msg','formats','rabbit','versus','reading','code','advanced','settings','analyst','practice','capstone','arch','schema'];
+  const CHAIN = ['basics','parts','life','models','guar','kafka','msg','formats','rabbit','versus','reading','code','advanced','settings','analyst','practice','capstone','arch','schema','tradeoffs'];
   const label = id => {
     const tab = document.querySelector(`.tab[data-tab="${id}"]`);
     return tab ? tab.textContent.replace('✓','').trim() : id;
